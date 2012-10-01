@@ -87,7 +87,7 @@ public class MediaConcatenator extends MediaToolAdapter {
 		super.onAudioSamples(new AudioSamplesEvent(this, samples, audioStreamIndex));
 	}
 
-	public void onVideoPicture(IVideoPictureEvent event) {
+	public synchronized void onVideoPicture(IVideoPictureEvent event) {
 		IVideoPicture picture = event.getMediaData();
 		long originalTimeStamp = picture.getTimeStamp();
 

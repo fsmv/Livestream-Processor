@@ -5,6 +5,11 @@ import java.util.concurrent.TimeUnit;
 import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 
+/**
+ * Adapter to check the encoding progress of an IMediaWriter object
+ * 
+ * @author Andrew Kallmeyer
+ */
 public class ProgressListener extends MediaListenerAdapter {
 
 	private long finalDuration;

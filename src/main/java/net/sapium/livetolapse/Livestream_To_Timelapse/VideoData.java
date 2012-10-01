@@ -8,6 +8,11 @@ import com.xuggle.xuggler.IRational;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
+/**
+ * A data class for finding and holding data about a video file
+ * 
+ * @author Andrew Kallmeyer
+ */
 public class VideoData {
 	private int width;
 	private int height;
@@ -31,7 +36,8 @@ public class VideoData {
 
 			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
 				IRational base = stream.getTimeBase();
-				duration = container.getDuration()/base.getDenominator();
+				duration = 1000*stream.getDuration()/base.getDenominator();
+				System.out.println(base.getNumerator() + "/" + base.getDenominator() + " " + stream.getDuration());
 				width = coder.getWidth();
 				height = coder.getHeight();
 			} else if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
@@ -42,35 +48,35 @@ public class VideoData {
 	}
 
 	/**
-	 * @return the width
+	 * @return the frame width
 	 */
 	public int getWidth() {
 		return width;
 	}
 
 	/**
-	 * @return the height
+	 * @return the frame height
 	 */
 	public int getHeight() {
 		return height;
 	}
 
 	/**
-	 * @return the audioChannels
+	 * @return the number of audio channels
 	 */
 	public int getAudioChannels() {
 		return audioChannels;
 	}
 
 	/**
-	 * @return the audioSampleRate
+	 * @return the the sample rate
 	 */
 	public int getAudioSampleRate() {
 		return audioSampleRate;
 	}
 
 	/**
-	 * @return the duration
+	 * @return the duration in ms
 	 */
 	public long getDuration() {
 		return duration;
