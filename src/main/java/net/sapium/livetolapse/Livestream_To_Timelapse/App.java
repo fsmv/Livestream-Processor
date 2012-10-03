@@ -165,13 +165,8 @@ public class App implements ProgressChangedListener {
 						}
 
 						System.out.println("concatenating");
-						final File[] fFileList = fileList;
-						final File fOutputFile = outputFile;
-						display.asyncExec(new Runnable() {
-							public void run() {
-								concatenateFiles(fFileList, fOutputFile.getAbsolutePath());
-							}
-						});
+						Thread concatenateThread = new Thread(new ProcessingThread(App.this, fileList, outputFile.getAbsolutePath()));
+						concatenateThread.start();
 					}
 				}
 			}
@@ -190,82 +185,14 @@ public class App implements ProgressChangedListener {
 		}
 	}
 
-	/**
-	 * Concatenates a list of video files all must have the same frame size, audio rates, number of channels, and filetype
-	 * 
-	 * @param files
-	 *            array of files to concatenate together in the order of this array
-	 * @param output
-	 *            location of the output file
-	 */
-	// TODO: Error handling for when the files array has files of different types
-	// TODO: Error handling for when the output file already exists
-	public void concatenateFiles(File[] files, String output) {
-		MediaConcatenator concatenator = new MediaConcatenator(0, 1);
-
-		IMediaReader[] readers = new IMediaReader[files.length];
-		VideoData data = null;
-		long duration = 0;
-		for (int i = 0; i < files.length; i++) {
-			IMediaReader reader = ToolFactory.makeReader(files[i].getAbsolutePath());
-			reader.addListener(concatenator);
-			data = new VideoData(files[i]);
-			duration += data.getDuration();
-			readers[i] = reader;
-		}
-		
-		IMediaWriter writer = ToolFactory.makeWriter(output);
-		ProgressListener progress = new ProgressListener(duration, this);
-		writer.addListener(progress);
-		concatenator.addListener(writer);
-
-		writer.addVideoStream(0, 1, data.getWidth(), data.getHeight());
-		writer.addAudioStream(1, 0, data.getAudioChannels(), data.getAudioSampleRate());
-
-		for (int i = 0; i < readers.length; i++) {
-			while (readers[i].readPacket() == null)
-				;
-		}
-
-		writer.close();
-	}
-
-	/**
-	 * Gets a list of files from a directory containing the files to concatenate
-	 * 
-	 * Folder must contain only video files of the same type and parameters
-	 * 
-	 * @param folder
-	 *            folder to search through
-	 * @return an array of files from the folder
-	 */
-	public static File[] getFileList(String folder) {
-		File sourceFolder = new File(folder);
-		File[] result = null;
-
-		if (sourceFolder.exists() && sourceFolder.isDirectory()) {
-			File[] files = sourceFolder.listFiles();
-
-			String extension = "";
-			for (int i = 0; i < files.length; i++) {
-				String name = files[i].getAbsolutePath();
-				int index = name.lastIndexOf('.');
-				if (extension == "") {
-					extension = name.substring(index);
-				} else if (!extension.equals(name.substring(index))) {
-					throw new IllegalArgumentException("Folder contains multiple filetypes.");
-				}
-			}
-
-			result = files;
-		}
-
-		return result;
-	}
-
 	public synchronized void onProgressChanged(double progress) {
-		int percent = (int) (progress * 100);
-		progressBar.setSelection(percent);
-		System.out.println(progress);
+		final Double finalProg = new Double(progress);
+		display.asyncExec(new Runnable() {
+			public void run() {
+				int percent = (int) (finalProg.doubleValue() * 100);
+				progressBar.setSelection(percent);
+				System.out.println(finalProg.doubleValue());
+			}
+		});
 	}
 }
