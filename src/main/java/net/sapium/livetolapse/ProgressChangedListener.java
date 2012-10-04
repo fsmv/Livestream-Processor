@@ -1,4 +1,4 @@
-package net.sapium.livetolapse.Livestream_To_Timelapse;
+package net.sapium.livetolapse;
 
 /**
  * Implement this class to be able to recieve progress data from the ProgressListenerClass

@@ -1,4 +1,4 @@
-package net.sapium.livetolapse.Livestream_To_Timelapse;
+package net.sapium.livetolapse;
 
 import java.io.File;
 
@@ -7,7 +7,7 @@ import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 
 public class ProcessingThread implements Runnable {
-	
+
 	App app;
 	File[] files;
 	String outFile;
@@ -21,7 +21,7 @@ public class ProcessingThread implements Runnable {
 	public void run() {
 		concatenateFiles(app, files, outFile);
 	}
-	
+
 	/**
 	 * Concatenates a list of video files all must have the same frame size, audio rates, number of channels, and filetype
 	 * 
@@ -45,10 +45,12 @@ public class ProcessingThread implements Runnable {
 			duration += data.getDuration();
 			readers[i] = reader;
 		}
-		
+
 		IMediaWriter writer = ToolFactory.makeWriter(output);
-		ProgressListener progress = new ProgressListener(duration, app);
-		writer.addListener(progress);
+		if (app != null) {
+			ProgressListener progress = new ProgressListener(duration, app);
+			writer.addListener(progress);
+		}
 		concatenator.addListener(writer);
 
 		writer.addVideoStream(0, 1, data.getWidth(), data.getHeight());
@@ -61,7 +63,7 @@ public class ProcessingThread implements Runnable {
 
 		writer.close();
 	}
-	
+
 	/**
 	 * Gets a list of files from a directory containing the files to concatenate
 	 * 

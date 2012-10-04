@@ -1,10 +1,6 @@
-package net.sapium.livetolapse.Livestream_To_Timelapse;
+package net.sapium.livetolapse;
 
 import java.io.File;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingWorker;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -21,10 +17,6 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import com.xuggle.mediatool.IMediaReader;
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
 
 public class App implements ProgressChangedListener {
 	protected Shell shell;
@@ -165,6 +157,7 @@ public class App implements ProgressChangedListener {
 						}
 
 						System.out.println("concatenating");
+						
 						Thread concatenateThread = new Thread(new ProcessingThread(App.this, fileList, outputFile.getAbsolutePath()));
 						concatenateThread.start();
 					}

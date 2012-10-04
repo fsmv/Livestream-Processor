@@ -1,4 +1,4 @@
-package net.sapium.livetolapse.Livestream_To_Timelapse;
+package net.sapium.livetolapse;
 
 import java.io.File;
 
@@ -37,14 +37,16 @@ public class VideoData {
 			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
 				IRational base = stream.getTimeBase();
 				duration = 1000*stream.getDuration()/base.getDenominator();
-				System.out.println(base.getNumerator() + "/" + base.getDenominator() + " " + stream.getDuration());
 				width = coder.getWidth();
 				height = coder.getHeight();
 			} else if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
 				audioChannels = coder.getChannels();
 				audioSampleRate = coder.getSampleRate();
 			}
+			
+			coder.close();
 		}
+		container.close();
 	}
 
 	/**

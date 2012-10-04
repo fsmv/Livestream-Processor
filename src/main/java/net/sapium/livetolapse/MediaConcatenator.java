@@ -17,11 +17,10 @@
  * along with Xuggle-Xuggler-Main.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package net.sapium.livetolapse.Livestream_To_Timelapse;
+package net.sapium.livetolapse;
 
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.event.AudioSamplesEvent;
-import com.xuggle.mediatool.event.CloseEvent;
 import com.xuggle.mediatool.event.IAddStreamEvent;
 import com.xuggle.mediatool.event.IAudioSamplesEvent;
 import com.xuggle.mediatool.event.ICloseCoderEvent;
