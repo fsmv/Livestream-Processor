@@ -20,6 +20,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TaskBar;
+import org.eclipse.swt.widgets.TaskItem;
 import org.eclipse.swt.widgets.Text;
 
 public class App implements ProgressChangedListener {
@@ -30,7 +32,8 @@ public class App implements ProgressChangedListener {
     private Label outputLabel;
     private ProgressBar progressBar;
     private Display display;
-    final private Logger logger = Logger.getLogger("net.sapium.livestreamprocessor");
+    private TaskItem taskBarItem;
+    private Label statusLabel;
 
     public static void main(String[] args) {
         try {
@@ -42,19 +45,6 @@ public class App implements ProgressChangedListener {
     }
 
     public void open() {
-        FileHandler fh;
-        try {
-            fh = new FileHandler("./output.log");
-            logger.addHandler(fh);
-            // logger.setLevel(Level.ALL);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         createContents();
         shell.open();
         shell.layout();
@@ -72,7 +62,9 @@ public class App implements ProgressChangedListener {
         shell.setSize(450, 300);
         shell.setText("Livestream Processor");
         shell.setLayout(new FormLayout());
-
+        
+        taskBarItem = getTaskBarItem();
+        
         folderTextBox = new Text(shell, SWT.BORDER);
         folderTextBox.setTouchEnabled(true);
         FormData fd_folderTextBox = new FormData();
@@ -127,8 +119,9 @@ public class App implements ProgressChangedListener {
         fd_outputLabel.top = new FormAttachment(outputTextBox, 3, SWT.TOP);
         fd_outputLabel.left = new FormAttachment(folderLabel, 0, SWT.LEFT);
         outputLabel.setLayoutData(fd_outputLabel);
-
+        
         progressBar = new ProgressBar(shell, SWT.SMOOTH);
+        progressBar.setMaximum(1000);
         FormData fd_progressBar = new FormData();
         fd_progressBar.right = new FormAttachment(outputButton, 0, SWT.RIGHT);
         fd_progressBar.bottom = new FormAttachment(100, -10);
@@ -187,10 +180,7 @@ public class App implements ProgressChangedListener {
                             File[] fileList = new File[size];
                             for (int i = 0; i < size; i++) {
                                 fileList[i] = new File(new File(folderTextBox.getText()).getAbsolutePath() + "\\" + fileListView.getItems()[i]);
-                                System.out.println(fileList[i]);
                             }
-
-                            System.out.println("concatenating");
 
                             Thread concatenateThread = new Thread(new ProcessingThread(App.this, fileList, outputFile.getAbsolutePath()));
                             concatenateThread.start();
@@ -202,21 +192,53 @@ public class App implements ProgressChangedListener {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
         });
+        
+        statusLabel = new Label(shell, SWT.NONE);
+        statusLabel.setAlignment(SWT.RIGHT);
+        FormData fd_statusLabel = new FormData();
+        fd_statusLabel.left = new FormAttachment(outputButton, -28);
+        fd_statusLabel.top = new FormAttachment(progressBar, -26, SWT.TOP);
+        fd_statusLabel.right = new FormAttachment(outputButton, 0, SWT.RIGHT);
+        fd_statusLabel.bottom = new FormAttachment(progressBar, -11);
+        statusLabel.setLayoutData(fd_statusLabel);
     }
 
-    int count = 0;
-
+    /**
+     * For windows task bar progress
+     */
+    public TaskItem getTaskBarItem() {
+        TaskBar bar = display.getSystemTaskBar();
+        if (bar == null)
+            return null;
+        TaskItem item = bar.getItem(shell);
+        if (item == null)
+            item = bar.getItem(null);
+        return item;
+    }
+    
     public void onProgressChanged(double progress) {
-        count++;
         final Double finalProg = new Double(progress);
         display.asyncExec(new Runnable() {
             public void run() {
-                int percent = (int) (finalProg.doubleValue() * 100);
-                progressBar.setSelection(percent);
-                System.out.println(finalProg.doubleValue());
-                if (count >= 100) {
-                    logger.info("" + finalProg.doubleValue());
+                if(taskBarItem != null){
+                    if(taskBarItem.getProgressState() == SWT.DEFAULT){
+                        taskBarItem.setProgressState(SWT.NORMAL);
+                    }else if(taskBarItem.getProgressState() == SWT.NORMAL){
+                        taskBarItem.setProgress((int) (finalProg.doubleValue() * 100));
+                        if(finalProg.doubleValue() == 1){
+                            taskBarItem.setProgressState(SWT.DEFAULT);
+                        }
+                    }
                 }
+                int percent = (int) (finalProg.doubleValue() * 1000);
+                statusLabel.setText((percent/10) + "%");
+                if(percent < 10){
+                    percent = 10;
+                }else if(percent == 1000){
+                    percent = 0;
+                    statusLabel.setText("Done");
+                }
+                progressBar.setSelection(percent);
             }
         });
     }

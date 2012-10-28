@@ -3,6 +3,7 @@ package net.sapium.livestreamprocessor;
 import java.util.concurrent.TimeUnit;
 
 import com.xuggle.mediatool.MediaListenerAdapter;
+import com.xuggle.mediatool.event.ICloseEvent;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 
 /**
@@ -13,6 +14,7 @@ import com.xuggle.mediatool.event.IVideoPictureEvent;
 public class ProgressListener extends MediaListenerAdapter {
 
 	private long finalDuration;
+	private double progress;
 	private ProgressChangedListener listener;
 	
 	public ProgressListener(long finalDuration, ProgressChangedListener listener) {
@@ -23,7 +25,13 @@ public class ProgressListener extends MediaListenerAdapter {
 	public void onVideoPicture(IVideoPictureEvent event) {
 		long currentTime = event.getTimeStamp(TimeUnit.MILLISECONDS);
 		
-		double progress = 1 - ((finalDuration - currentTime)/(double)finalDuration);
+		progress = 1 - ((finalDuration - currentTime)/(double)finalDuration);
 		listener.onProgressChanged(progress);
+	}
+	
+	public void onClose(ICloseEvent event) {
+	    if((int) (progress*1000) >= 980){
+	        listener.onProgressChanged(1);
+	    }
 	}
 }

@@ -34,8 +34,6 @@ public class VideoData {
 			IStreamCoder coder = stream.getStreamCoder();
 
 			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
-				//IRational base = stream.getTimeBase();
-				//duration = 1000*stream.getDuration()/base.getDenominator();
 				width = coder.getWidth();
 				height = coder.getHeight();
 			} else if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {

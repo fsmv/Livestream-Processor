@@ -140,7 +140,7 @@ public class MediaConcatenator extends MediaToolAdapter {
 		// update the offset by the larger of the next expected audio or video
 		// frame time
 
-		offset = Math.max(nextVideoTimestamp, nextAudioTimestamp);
+		offset += Math.max(nextVideoTimestamp, nextAudioTimestamp);
 		
 		if (nextAudioTimestamp < nextVideoTimestamp) {
 			// In this case we know that there is more video in the
@@ -155,7 +155,7 @@ public class MediaConcatenator extends MediaToolAdapter {
 			// However kiddies, this is demo code, so that code
 			// is left as an exercise for the readers. As a hint,
 			// see the IAudioSamples.defaultPtsToSamples(...) methods.
-			long numSamples = IAudioSamples.defaultPtsToSamples(nextVideoTimestamp-1, audioSampleRate);
+			long numSamples = IAudioSamples.defaultPtsToSamples(nextVideoTimestamp, audioSampleRate);
 			super.onAudioSamples(new AudioSamplesEvent(this, IAudioSamples.make(numSamples, numAudioChannels), audioStreamIndex));
 		}
 	}

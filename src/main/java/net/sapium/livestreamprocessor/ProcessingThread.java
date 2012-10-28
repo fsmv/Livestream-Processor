@@ -2,6 +2,9 @@ package net.sapium.livestreamprocessor;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
@@ -33,6 +36,9 @@ public class ProcessingThread implements Runnable {
 	// TODO: Error handling for when the files array has files of different types
 	// TODO: Error handling for when the output file already exists
 	public static void concatenateFiles(App app, File[] files, String output) {
+	    Logger logger = LoggerFactory.getLogger(ProcessingThread.class);
+	    logger.info("Concatenating files and saving as " + output);
+	    
 		MediaConcatenator concatenator = new MediaConcatenator(0, 1);
 
 		IMediaReader[] readers = new IMediaReader[files.length];
@@ -44,9 +50,9 @@ public class ProcessingThread implements Runnable {
 			data = new VideoData(files[i]);
 			duration += data.getDuration();
 			readers[i] = reader;
+			logger.info(files[i].getAbsolutePath());
 		}
 		
-		System.out.println("duration: " + duration);
 		IMediaWriter writer = ToolFactory.makeWriter(output);
 		if (app != null) {
 			ProgressListener progress = new ProgressListener(duration, app);
@@ -63,6 +69,8 @@ public class ProcessingThread implements Runnable {
 		}
 		
 		writer.close();
+		
+		logger.info("Done");
 	}
 
 	/**
