@@ -1,10 +1,9 @@
-package net.sapium.livetolapse;
+package net.sapium.livestreamprocessor;
 
 import java.io.File;
 
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IRational;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
@@ -35,8 +34,8 @@ public class VideoData {
 			IStreamCoder coder = stream.getStreamCoder();
 
 			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
-				IRational base = stream.getTimeBase();
-				duration = 1000*stream.getDuration()/base.getDenominator();
+				//IRational base = stream.getTimeBase();
+				//duration = 1000*stream.getDuration()/base.getDenominator();
 				width = coder.getWidth();
 				height = coder.getHeight();
 			} else if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
@@ -46,6 +45,7 @@ public class VideoData {
 			
 			coder.close();
 		}
+		duration = container.getDuration()/1000;
 		container.close();
 	}
 

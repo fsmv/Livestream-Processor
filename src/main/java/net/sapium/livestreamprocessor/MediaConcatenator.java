@@ -17,7 +17,13 @@
  * along with Xuggle-Xuggler-Main.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-package net.sapium.livetolapse;
+/**
+ * Modified from the original
+ * 
+ * @author Andrew Kallmeyer
+ */
+
+package net.sapium.livestreamprocessor;
 
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.event.AudioSamplesEvent;
@@ -47,6 +53,9 @@ public class MediaConcatenator extends MediaToolAdapter {
 
 	// the index of the video stream
 	private final int videoStreamIndex;
+	
+	private int audioSampleRate = 0;
+	private int numAudioChannels = 0;
 
 	/**
 	 * Create a concatenator.
@@ -64,11 +73,19 @@ public class MediaConcatenator extends MediaToolAdapter {
 
 	public void onAudioSamples(IAudioSamplesEvent event) {
 		IAudioSamples samples = event.getAudioSamples();
+		if(audioSampleRate == 0){
+			audioSampleRate = samples.getSampleRate();
+		}
+		
+		if(numAudioChannels == 0){
+			numAudioChannels = samples.getChannels();
+		}
 
 		// set the new time stamp to the original plus the offset established
 		// for this media file
 
 		long newTimeStamp = samples.getTimeStamp() + offset;
+		samples.getSampleRate();
 
 		// keep track of predicted time of the next audio samples, if the end
 		// of the media file is encountered, then the offset will be adjusted
@@ -125,7 +142,6 @@ public class MediaConcatenator extends MediaToolAdapter {
 
 		offset = Math.max(nextVideoTimestamp, nextAudioTimestamp);
 		
-
 		if (nextAudioTimestamp < nextVideoTimestamp) {
 			// In this case we know that there is more video in the
 			// last file that we read than audio. Technically you
@@ -139,6 +155,8 @@ public class MediaConcatenator extends MediaToolAdapter {
 			// However kiddies, this is demo code, so that code
 			// is left as an exercise for the readers. As a hint,
 			// see the IAudioSamples.defaultPtsToSamples(...) methods.
+			long numSamples = IAudioSamples.defaultPtsToSamples(nextVideoTimestamp-1, audioSampleRate);
+			super.onAudioSamples(new AudioSamplesEvent(this, IAudioSamples.make(numSamples, numAudioChannels), audioStreamIndex));
 		}
 	}
 

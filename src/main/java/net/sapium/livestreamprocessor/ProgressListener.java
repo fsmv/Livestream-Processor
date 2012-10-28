@@ -1,4 +1,4 @@
-package net.sapium.livetolapse;
+package net.sapium.livestreamprocessor;
 
 import java.util.concurrent.TimeUnit;
 

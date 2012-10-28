@@ -1,4 +1,4 @@
-package net.sapium.livetolapse.test;
+package net.sapium.livestreamprocessor;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

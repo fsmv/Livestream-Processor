@@ -1,4 +1,4 @@
-package net.sapium.livetolapse;
+package net.sapium.livestreamprocessor;
 
 import java.io.File;
 
@@ -45,7 +45,8 @@ public class ProcessingThread implements Runnable {
 			duration += data.getDuration();
 			readers[i] = reader;
 		}
-
+		
+		System.out.println("duration: " + duration);
 		IMediaWriter writer = ToolFactory.makeWriter(output);
 		if (app != null) {
 			ProgressListener progress = new ProgressListener(duration, app);
@@ -60,7 +61,7 @@ public class ProcessingThread implements Runnable {
 			while (readers[i].readPacket() == null)
 				;
 		}
-
+		
 		writer.close();
 	}
 
