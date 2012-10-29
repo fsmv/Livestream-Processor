@@ -1,3 +1,23 @@
+What Works
+----------
+
+ - Concatenating files
+ - Multi-platform building
+ - Time remaining predictor
+
+What Doesn't (yet)
+------------------
+
+- Concatenation:
+  - Manual ordering of files to concatenate
+  - Selection of which files in the list to concatenate
+  - Codec selection?
+  - CPU Limiting
+- Time Lapse Creator:
+  - Everything
+- Twitch.tv downloader:
+  - Everything
+
 Building
 --------
 
