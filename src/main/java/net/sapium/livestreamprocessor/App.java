@@ -1,10 +1,8 @@
 package net.sapium.livestreamprocessor;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -35,6 +33,11 @@ public class App implements ProgressChangedListener {
     private TaskItem taskBarItem;
     private Label statusLabel;
 
+    private long taskStartTime;
+    private ArrayList<Long> remainingTimeList;
+    private int remainingTimeIndex;
+    private final int remainingTimeHistory = 100;
+
     public static void main(String[] args) {
         try {
             App window = new App();
@@ -53,6 +56,9 @@ public class App implements ProgressChangedListener {
                 display.sleep();
             }
         }
+
+        // TODO: tell threads to stop and delete half-finished files
+
         display.dispose();
     }
 
@@ -62,9 +68,9 @@ public class App implements ProgressChangedListener {
         shell.setSize(450, 300);
         shell.setText("Livestream Processor");
         shell.setLayout(new FormLayout());
-        
+
         taskBarItem = getTaskBarItem();
-        
+
         folderTextBox = new Text(shell, SWT.BORDER);
         folderTextBox.setTouchEnabled(true);
         FormData fd_folderTextBox = new FormData();
@@ -119,7 +125,7 @@ public class App implements ProgressChangedListener {
         fd_outputLabel.top = new FormAttachment(outputTextBox, 3, SWT.TOP);
         fd_outputLabel.left = new FormAttachment(folderLabel, 0, SWT.LEFT);
         outputLabel.setLayoutData(fd_outputLabel);
-        
+
         progressBar = new ProgressBar(shell, SWT.SMOOTH);
         progressBar.setMaximum(1000);
         FormData fd_progressBar = new FormData();
@@ -192,14 +198,14 @@ public class App implements ProgressChangedListener {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
         });
-        
+
         statusLabel = new Label(shell, SWT.NONE);
         statusLabel.setAlignment(SWT.RIGHT);
         FormData fd_statusLabel = new FormData();
-        fd_statusLabel.left = new FormAttachment(outputButton, -28);
+        fd_statusLabel.left = new FormAttachment(outputButton, -178);
+        fd_statusLabel.bottom = new FormAttachment(progressBar, -6);
         fd_statusLabel.top = new FormAttachment(progressBar, -26, SWT.TOP);
         fd_statusLabel.right = new FormAttachment(outputButton, 0, SWT.RIGHT);
-        fd_statusLabel.bottom = new FormAttachment(progressBar, -11);
         statusLabel.setLayoutData(fd_statusLabel);
     }
 
@@ -215,31 +221,118 @@ public class App implements ProgressChangedListener {
             item = bar.getItem(null);
         return item;
     }
-    
+
     public void onProgressChanged(double progress) {
         final Double finalProg = new Double(progress);
-        display.asyncExec(new Runnable() {
-            public void run() {
-                if(taskBarItem != null){
-                    if(taskBarItem.getProgressState() == SWT.DEFAULT){
-                        taskBarItem.setProgressState(SWT.NORMAL);
-                    }else if(taskBarItem.getProgressState() == SWT.NORMAL){
-                        taskBarItem.setProgress((int) (finalProg.doubleValue() * 100));
-                        if(finalProg.doubleValue() == 1){
-                            taskBarItem.setProgressState(SWT.DEFAULT);
+        final long elapsedTime = System.nanoTime() - getTaskStartTime();
+        if (elapsedTime > 60000000) { //Only update every 1/60 seconds (the status label was flickering)
+            display.asyncExec(new Runnable() {
+                public void run() {
+                    if (taskBarItem != null) {
+                        if (taskBarItem.getProgressState() == SWT.NORMAL) {
+                            taskBarItem.setProgress((int) (finalProg.doubleValue() * 100));
                         }
                     }
+
+                    int percent = (int) (finalProg.doubleValue() * 1000);
+
+                    long remainingTime = (long) (elapsedTime / finalProg.doubleValue()) - elapsedTime;
+                    if (remainingTimeList.size() > remainingTimeIndex) {
+                        remainingTimeList.set(remainingTimeIndex, remainingTime);
+                    } else {
+                        remainingTimeList.add(remainingTime);
+                    }
+
+                    remainingTimeIndex++;
+                    if (remainingTimeIndex >= remainingTimeHistory) {
+                        remainingTimeIndex = 0;
+                    }
+
+                    long remainingTimeAve = 0;
+                    for (int i = 0; i < remainingTimeList.size(); i++) {
+                        remainingTimeAve += remainingTimeList.get(i);
+                    }
+
+                    remainingTimeAve /= remainingTimeList.size();
+
+                    statusLabel.setText((percent / 10) + "% " + App.nanoTimeToString(elapsedTime) + " remaining: " + App.nanoTimeToString(remainingTimeAve));
+                    if (percent < 10) {
+                        percent = 10;
+                    }
+                    progressBar.setSelection(percent);
                 }
-                int percent = (int) (finalProg.doubleValue() * 1000);
-                statusLabel.setText((percent/10) + "%");
-                if(percent < 10){
-                    percent = 10;
-                }else if(percent == 1000){
-                    percent = 0;
-                    statusLabel.setText("Done");
+            });
+        }
+    }
+
+    @Override
+    public void onTaskStarted() {
+        setTaskStartTime(System.nanoTime());
+        remainingTimeList = new ArrayList<Long>(remainingTimeHistory);
+        remainingTimeIndex = 0;
+        display.asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                if (taskBarItem != null) {
+                    taskBarItem.setProgressState(SWT.NORMAL);
                 }
-                progressBar.setSelection(percent);
             }
         });
+    }
+
+    @Override
+    public void onTaskEnded() {
+        setTaskStartTime(0);
+        display.asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                if (taskBarItem != null) {
+                    taskBarItem.setProgressState(SWT.DEFAULT);
+                    taskBarItem.setProgress(0);
+                }
+                progressBar.setSelection(0);
+                statusLabel.setText("Done");
+            }
+        });
+    }
+
+    private synchronized long getTaskStartTime() {
+        return taskStartTime;
+    }
+
+    private synchronized void setTaskStartTime(long time) {
+        taskStartTime = time;
+    }
+
+    public static String nanoTimeToString(long time) {
+        String result = "";
+
+        int h = (int) (((time) / 1000000000 / 60 / 60) % 24);
+        int m = (int) (((time) / 1000000000 / 60) % 60);
+        int s = (int) ((time / 1000000000) % 60);
+
+        if (h < 10) {
+            result += "0" + h;
+        } else {
+            result += h;
+        }
+
+        result += ":";
+
+        if (m < 10) {
+            result += "0" + m;
+        } else {
+            result += m;
+        }
+
+        result += ":";
+
+        if (s < 10) {
+            result += "0" + s;
+        } else {
+            result += s;
+        }
+
+        return result;
     }
 }

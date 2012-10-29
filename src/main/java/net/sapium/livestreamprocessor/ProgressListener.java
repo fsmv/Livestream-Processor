@@ -16,6 +16,7 @@ public class ProgressListener extends MediaListenerAdapter {
 	private long finalDuration;
 	private double progress;
 	private ProgressChangedListener listener;
+	private boolean started;
 	
 	public ProgressListener(long finalDuration, ProgressChangedListener listener) {
 		this.finalDuration = finalDuration;
@@ -23,6 +24,11 @@ public class ProgressListener extends MediaListenerAdapter {
 	}
 	
 	public void onVideoPicture(IVideoPictureEvent event) {
+	    if(!started){
+	        started = true;
+	        listener.onTaskStarted();
+	    }
+	    
 		long currentTime = event.getTimeStamp(TimeUnit.MILLISECONDS);
 		
 		progress = 1 - ((finalDuration - currentTime)/(double)finalDuration);
@@ -31,7 +37,7 @@ public class ProgressListener extends MediaListenerAdapter {
 	
 	public void onClose(ICloseEvent event) {
 	    if((int) (progress*1000) >= 980){
-	        listener.onProgressChanged(1);
+	        listener.onTaskEnded();
 	    }
 	}
 }

@@ -11,9 +11,12 @@ import com.xuggle.mediatool.ToolFactory;
 
 public class ProcessingThread implements Runnable {
 
-	App app;
-	File[] files;
-	String outFile;
+	private App app;
+	private File[] files;
+	private String outFile;
+	public static final String TASK_CONCATENATING = "concatenating";
+	public static final String TASK_SPEEDING_UP = "speeding up";
+	
 
 	public ProcessingThread(App app, File[] files, String outFile) {
 		this.app = app;
