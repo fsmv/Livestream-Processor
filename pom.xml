@@ -37,13 +37,13 @@
         
         <repository>
             <id>swt repo</id>
-            <url>http://swt-repo.googlecode.com/svn/repo/org/eclipse/</url>
+            <url>http://swt-maven.googlecode.com/git-history/master/</url>
         </repository>
     </repositories>
     
     <properties>
         <jdk.version>1.6</jdk.version>
-        <swt.version>3.8</swt.version>
+        <swt.version>4.2.1</swt.version>
         <main.class>net.sapium.livestreamprocessor.loader.Main</main.class>
         <lib.directory>lib</lib.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -62,7 +62,7 @@
             <version>5.4</version>
         </dependency>
         <dependency>
-            <groupId>swt</groupId>
+            <groupId>org.eclipse.swt</groupId>
             <artifactId>${swt.artifactId}</artifactId>
             <version>${swt.version}</version>
         </dependency>
