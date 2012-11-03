@@ -2,7 +2,6 @@ package net.sapium.livestreamprocessor;
 
 import java.io.File;
 
-import net.sapium.livestreamprocessor.ProcessingThread;
 import net.sapium.livestreamprocessor.VideoData;
 
 import junit.framework.Test;
@@ -47,7 +46,7 @@ public class VideoDataTest extends TestCase {
 		assertTrue(result);
 	}
 	
-	public void testConcatenation() {
+	/*public void testConcatenation() {
 		File[] files = {new File("C:\\Users\\Andrew\\workspace\\java\\Livestream-To-Timelapse\\testcase\\1.mp4"), new File("C:\\Users\\Andrew\\workspace\\java\\Livestream-To-Timelapse\\testcase\\2.mp4"), new File("C:\\Users\\Andrew\\workspace\\java\\Livestream-To-Timelapse\\testcase\\3.mp4")};
 		String output = "C:\\Users\\Andrew\\workspace\\java\\Livestream-To-Timelapse\\testcase\\out.mp4";
 		File out = new File(output);
@@ -55,7 +54,7 @@ public class VideoDataTest extends TestCase {
 			out.delete();
 		}
 		
-		//ProcessingThread.concatenateFiles(null, files, output);
+		ProcessingThread.concatenateFiles(null, files, output);
 		assertTrue(true);
-	}
+	}*/
 }

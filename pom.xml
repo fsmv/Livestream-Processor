@@ -42,7 +42,7 @@
     </repositories>
     
     <properties>
-        <jdk.version>1.6</jdk.version>
+        <jdk.version>1.7</jdk.version>
         <swt.version>4.2.1</swt.version>
         <main.class>net.sapium.livestreamprocessor.loader.Main</main.class>
         <lib.directory>lib</lib.directory>

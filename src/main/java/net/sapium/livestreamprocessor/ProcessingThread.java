@@ -11,21 +11,21 @@ import com.xuggle.mediatool.ToolFactory;
 
 public class ProcessingThread implements Runnable {
 
-	private App app;
+	private ProgressChangedListener listener;
 	private File[] files;
 	private String outFile;
 	public static final String TASK_CONCATENATING = "concatenating";
 	public static final String TASK_SPEEDING_UP = "speeding up";
 	
 
-	public ProcessingThread(App app, File[] files, String outFile) {
-		this.app = app;
+	public ProcessingThread(ProgressChangedListener listener, File[] files, String outFile) {
+		this.listener = listener;
 		this.files = files;
 		this.outFile = outFile;
 	}
 
 	public void run() {
-		concatenateFiles(app, files, outFile);
+		concatenateFiles(listener, files, outFile);
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class ProcessingThread implements Runnable {
 	 */
 	// TODO: Error handling for when the files array has files of different types
 	// TODO: Error handling for when the output file already exists
-	public static void concatenateFiles(App app, File[] files, String output) {
+	public static void concatenateFiles(ProgressChangedListener listener, File[] files, String output) {
 	    Logger logger = LoggerFactory.getLogger(ProcessingThread.class);
 	    logger.info("Concatenating files and saving as " + output);
 	    
@@ -57,8 +57,8 @@ public class ProcessingThread implements Runnable {
 		}
 		
 		IMediaWriter writer = ToolFactory.makeWriter(output);
-		if (app != null) {
-			ProgressListener progress = new ProgressListener(duration, app);
+		if (listener != null) {
+			ProgressListener progress = new ProgressListener(duration, listener);
 			writer.addListener(progress);
 		}
 		concatenator.addListener(writer);
