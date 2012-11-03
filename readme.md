@@ -2,21 +2,32 @@ What Works
 ----------
 
  - Concatenating files
+  - Concatenates arbitrary numbers of files
+  - Manual ordering of files to concatenate
+  - Selection of which files in the list to concatenate
  - Multi-platform building
  - Time remaining predictor
+ - Tabs with an independent progress bar, start button, and status output
 
 What Doesn't (yet)
 ------------------
 
 - Concatenation:
-  - Manual ordering of files to concatenate
-  - Selection of which files in the list to concatenate
-  - Codec selection?
+  - Codec selection? (at least keep it from using the AAC audio codec because xuggler can't handle reading it)
   - CPU Limiting
+  - Cancel operation
+  - Show progress by drawing a background on completed files in the list
 - Time Lapse Creator:
   - Everything
 - Twitch.tv downloader:
   - Everything
+- Run more than one task consecutively without prompting the user
+ - Download -> Concatenate -> Timelapse
+ - Concatenate -> Timelapse
+- JUnit Tests
+- Running in terminal only mode
+- Program Icon
+- About dialog
 
 Building
 --------
