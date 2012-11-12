@@ -1,0 +1,9 @@
+.git
+.project
+.classpath
+.settings/
+target/
+bin/
+*.zip
+*.log
+hs_err_pid*
