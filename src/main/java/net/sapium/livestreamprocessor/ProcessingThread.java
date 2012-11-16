@@ -48,11 +48,12 @@ public class ProcessingThread implements Runnable {
 		VideoData data = null;
 		long duration = 0;
 		for (int i = 0; i < files.length; i++) {
-			IMediaReader reader = ToolFactory.makeReader(files[i].getAbsolutePath());
+		    data = new VideoData(files[i]);
+			IMediaReader reader = data.getReader();
 			reader.addListener(concatenator);
-			data = new VideoData(files[i]);
-			duration += data.getDuration();
 			readers[i] = reader;
+			
+			duration += data.getDuration();
 			logger.info(files[i].getAbsolutePath());
 		}
 		

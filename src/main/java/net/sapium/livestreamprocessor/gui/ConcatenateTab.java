@@ -194,6 +194,7 @@ public class ConcatenateTab extends TabContent {
                     if (index != -1) { /* always true in this trivial example */
                         TreeItem newItem = new TreeItem(tree, SWT.NONE, index);
                         newItem.setText(itemBeingDragged.getText());
+                        newItem.setChecked(itemBeingDragged.getChecked());
                         itemBeingDragged.dispose();
                         tree.setSelection(new TreeItem[] { newItem });
                     }
@@ -214,7 +215,7 @@ public class ConcatenateTab extends TabContent {
                 LinkedList<TreeItem> checkedItems = new LinkedList<TreeItem>();
                 for(int i=0; i<items.length; i++){
                     if(items[i].getChecked()){
-                        checkedItems.add(items[0]);
+                        checkedItems.add(items[i]);
                     }
                 }
                 int size = checkedItems.size();

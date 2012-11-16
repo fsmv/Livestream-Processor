@@ -2,6 +2,8 @@ package net.sapium.livestreamprocessor;
 
 import java.io.File;
 
+import com.xuggle.mediatool.IMediaReader;
+import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IStream;
@@ -18,16 +20,15 @@ public class VideoData {
 	private int audioChannels;
 	private int audioSampleRate;
 	private long duration;
+	private IMediaReader reader;
 	
 	public VideoData(File video){
 		if (!video.exists()) {
 			throw new IllegalArgumentException("File not found.");
 		}
-
-		IContainer container = IContainer.make();
-		if (container.open(video.getAbsolutePath(), IContainer.Type.READ, null) < 0) {
-			throw new IllegalArgumentException("File could not be opened.");
-		}
+		reader = ToolFactory.makeReader(video.getAbsolutePath());
+		reader.open();
+		IContainer container = reader.getContainer();
 
 		for (int i = 0; i < container.getNumStreams(); i++) {
 			IStream stream = container.getStream(i);
@@ -40,11 +41,8 @@ public class VideoData {
 				audioChannels = coder.getChannels();
 				audioSampleRate = coder.getSampleRate();
 			}
-			
-			coder.close();
 		}
 		duration = container.getDuration()/1000;
-		container.close();
 	}
 
 	/**
@@ -80,5 +78,9 @@ public class VideoData {
 	 */
 	public long getDuration() {
 		return duration;
+	}
+	
+	public IMediaReader getReader(){
+	    return reader;
 	}
 }
