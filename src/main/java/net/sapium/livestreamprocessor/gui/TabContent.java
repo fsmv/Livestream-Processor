@@ -1,6 +1,6 @@
 package net.sapium.livestreamprocessor.gui;
 
-import net.sapium.livestreamprocessor.ProgressChangedListener;
+import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
 
 import org.eclipse.swt.widgets.Composite;
 

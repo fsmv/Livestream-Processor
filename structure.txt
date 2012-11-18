@@ -1,0 +1,66 @@
+com.sapium.livestreamprocessor:
+ + Main
+ + MultiPlatformSwtHelper
+ = gui
+    + MainWindow             im ProgressChangedListener
+    + TabContent             ex Composite
+    + ConcatinateTab         ex TabContent
+    + TimelapseTab           ex TabContent
+    + DownloadTab            ex TabContent
+ = Utilities
+    + VideoData
+    + MediaConcatenator      ex MediaToolAdapter
+    + ProgressChangedLisener (interface)
+    + ProgressListener       ex MediaListenerAdapter
+    & *Processor             im Runnable
+        - currentTask : int
+        + Processor(ProgressChangedListener listener)
+        + Run()
+            Do not override!
+            
+            if(validate()){
+                process(currentTask);
+            }
+        + setCurrentTask(int currentTask)
+        + *validate()
+        + *process(int task)
+    + Concatenator ex Processor
+        + ^% TASK_CONCATINATE : int
+        
+        + Concatenator(ProgressChangedListener)
+        + Concatenator(ProgressChangedListener listener, File[] filesToConcatenate, File outFile)
+        + setFilesToConcatinate(File[] filesToConcatenate)
+        + setOutFile(outFile)
+        + validate()
+        + process()
+    + Timelapser             ex Processor
+        + ^% TASK_TIMELAPSE : int
+        
+        + Timelapser(ProgressChangedListener listener)
+        + Timelapser(ProgressChangedListener listener, File inFile, File outFile)
+        + validate()
+        + process(int task)
+    + Downloader             ex Processor
+        + ^% TASK_GET_VIDEO_LIST : int
+        + ^% TASK_DOWNLOAD_VIDEOS : int
+        
+        + Downloader(ProgressChangedListener listener, URI twitchAccount)
+        + setTwitchAccount(URI twitchAccount)
+      //- NetworkThread      ex Runnable?
+        + getVideoList()
+        + getVideoList(URI twitchAccount)
+        - ^DownloadFile(URI file, File saveLocaton)
+        + ^DownloadFileList(URI[] files, File[] saveLocations)
+        + validate()
+        + process(int task)
+    
++  public
+-  private
+*  abstract
+^  static
+%  final
+$  interface
+&  protected
+=  Package
+im implements
+ex extends

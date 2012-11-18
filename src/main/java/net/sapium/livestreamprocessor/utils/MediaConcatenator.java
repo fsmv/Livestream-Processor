@@ -23,7 +23,7 @@
  * @author Andrew Kallmeyer
  */
 
-package net.sapium.livestreamprocessor;
+package net.sapium.livestreamprocessor.utils;
 
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.event.AudioSamplesEvent;

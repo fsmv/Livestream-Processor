@@ -44,7 +44,7 @@
     <properties>
         <jdk.version>1.7</jdk.version>
         <swt.version>4.2.1</swt.version>
-        <main.class>net.sapium.livestreamprocessor.loader.Main</main.class>
+        <main.class>net.sapium.livestreamprocessor.Main</main.class>
         <lib.directory>lib</lib.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

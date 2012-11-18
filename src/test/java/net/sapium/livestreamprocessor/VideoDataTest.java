@@ -2,7 +2,7 @@ package net.sapium.livestreamprocessor;
 
 import java.io.File;
 
-import net.sapium.livestreamprocessor.VideoData;
+import net.sapium.livestreamprocessor.utils.VideoData;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

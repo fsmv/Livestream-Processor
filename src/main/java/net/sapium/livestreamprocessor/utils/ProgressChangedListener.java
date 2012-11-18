@@ -1,4 +1,4 @@
-package net.sapium.livestreamprocessor;
+package net.sapium.livestreamprocessor.utils;
 
 /**
  * Implement this class to be able to recieve progress data from the ProgressListenerClass

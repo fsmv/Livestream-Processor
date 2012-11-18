@@ -1,6 +1,7 @@
-package net.sapium.livestreamprocessor;
+package net.sapium.livestreamprocessor.utils;
 
 import java.util.concurrent.TimeUnit;
+
 
 import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.event.ICloseEvent;

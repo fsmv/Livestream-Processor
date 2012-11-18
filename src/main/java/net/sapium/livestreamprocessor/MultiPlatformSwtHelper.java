@@ -1,4 +1,4 @@
-package net.sapium.livestreamprocessor.loader;
+package net.sapium.livestreamprocessor;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

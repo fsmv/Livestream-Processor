@@ -1,4 +1,4 @@
-package net.sapium.livestreamprocessor;
+package net.sapium.livestreamprocessor.utils;
 
 import java.io.File;
 

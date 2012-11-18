@@ -1,6 +1,7 @@
-package net.sapium.livestreamprocessor;
+package net.sapium.livestreamprocessor.utils;
 
 import java.io.File;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,7 @@ import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 
-public class ProcessingThread implements Runnable {
+public class Concatenator implements Runnable {
 
 	private ProgressChangedListener listener;
 	private File[] files;
@@ -18,7 +19,7 @@ public class ProcessingThread implements Runnable {
 	public static final String TASK_SPEEDING_UP = "speeding up";
 	
 
-	public ProcessingThread(ProgressChangedListener listener, File[] files, String outFile) {
+	public Concatenator(ProgressChangedListener listener, File[] files, String outFile) {
 		this.listener = listener;
 		this.files = files;
 		this.outFile = outFile;
@@ -39,7 +40,7 @@ public class ProcessingThread implements Runnable {
 	// TODO: Error handling for when the files array has files of different types
 	// TODO: Error handling for when the output file already exists
 	public static void concatenateFiles(ProgressChangedListener listener, File[] files, String output) {
-	    Logger logger = LoggerFactory.getLogger(ProcessingThread.class);
+	    Logger logger = LoggerFactory.getLogger(Concatenator.class);
 	    logger.info("Concatenating files and saving as " + output);
 	    
 		MediaConcatenator concatenator = new MediaConcatenator(0, 1);

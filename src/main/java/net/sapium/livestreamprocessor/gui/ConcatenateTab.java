@@ -3,8 +3,8 @@ package net.sapium.livestreamprocessor.gui;
 import java.io.File;
 import java.util.LinkedList;
 
-import net.sapium.livestreamprocessor.ProcessingThread;
-import net.sapium.livestreamprocessor.ProgressChangedListener;
+import net.sapium.livestreamprocessor.utils.Concatenator;
+import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -225,7 +225,7 @@ public class ConcatenateTab extends TabContent {
                         fileList[i] = new File(new File(folderTextBox.getText()).getAbsolutePath() + "\\" + checkedItems.get(i).getText());
                     }
 
-                    Thread concatenateThread = new Thread(new ProcessingThread(listener, fileList, outputFile.getAbsolutePath()));
+                    Thread concatenateThread = new Thread(new Concatenator(listener, fileList, outputFile.getAbsolutePath()));
                     concatenateThread.start();
                 }
             }

@@ -2,7 +2,7 @@ package net.sapium.livestreamprocessor.gui;
 
 import java.util.ArrayList;
 
-import net.sapium.livestreamprocessor.ProgressChangedListener;
+import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
