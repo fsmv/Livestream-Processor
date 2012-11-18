@@ -16,8 +16,6 @@ public class Concatenator implements Runnable {
 	private File[] files;
 	private String outFile;
 	public static final String TASK_CONCATENATING = "concatenating";
-	public static final String TASK_SPEEDING_UP = "speeding up";
-	
 
 	public Concatenator(ProgressChangedListener listener, File[] files, String outFile) {
 		this.listener = listener;

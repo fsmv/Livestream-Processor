@@ -4,7 +4,7 @@ com.sapium.livestreamprocessor:
  = gui
     + MainWindow             im ProgressChangedListener
     + TabContent             ex Composite
-    + ConcatinateTab         ex TabContent
+    + ConcatenateTab         ex TabContent
     + TimelapseTab           ex TabContent
     + DownloadTab            ex TabContent
  = Utilities
