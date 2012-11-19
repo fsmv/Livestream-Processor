@@ -1,5 +1,6 @@
 package net.sapium.livestreamprocessor.gui;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
@@ -142,6 +143,23 @@ public class MainWindow implements ProgressChangedListener {
         
         tbtmTimelapse = new TabItem(tabFolder, SWT.NONE);
         tbtmTimelapse.setText(TIMELAPSE_NAME);
+    }
+    
+    public static File appendNumberToFileName(File file){
+        int i = 1;
+        File newFile = new File(file.getAbsolutePath());
+        String fileName;
+        while(newFile.exists()){
+            fileName = newFile.getAbsolutePath() + "" + i;
+            newFile = new File(fileName);
+            i++;
+            if(i > 100){
+                logger.error("Can't find an unused file name (tried appending 1 through 100 to the end of the name): " + fileName.substring(0, fileName.length() - 3));
+                return null;
+            }
+        }
+        
+        return newFile;
     }
 
     /**

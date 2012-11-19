@@ -2,6 +2,7 @@ package net.sapium.livestreamprocessor.utils;
 
 import java.io.File;
 
+import net.sapium.livestreamprocessor.gui.MainWindow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,102 +11,137 @@ import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 
-public class Concatenator implements Runnable {
+public class Concatenator extends Processor {
 
-	private ProgressChangedListener listener;
-	private File[] files;
-	private String outFile;
-	public static final String TASK_CONCATENATING = "concatenating";
+    private ProgressChangedListener listener;
+    private File[] files;
+    private String outFile;
+    private boolean overwrite;
+    public static final int TASK_CONCATENATING = 1;
+    private static Logger logger;
 
-	public Concatenator(ProgressChangedListener listener, File[] files, String outFile) {
-		this.listener = listener;
-		this.files = files;
-		this.outFile = outFile;
-	}
+    public Concatenator(ProgressChangedListener listener) {
+        super(listener);
+        logger = LoggerFactory.getLogger(Concatenator.class);
+    }
 
-	public void run() {
-		concatenateFiles(listener, files, outFile);
-	}
+    public Concatenator(ProgressChangedListener listener, File[] files, String outFile) {
+        this(listener);
+        this.files = files;
+        this.outFile = outFile;
+    }
 
-	/**
-	 * Concatenates a list of video files all must have the same frame size, audio rates, number of channels, and filetype
-	 * 
-	 * @param files
-	 *            array of files to concatenate together in the order of this array
-	 * @param output
-	 *            location of the output file
-	 */
-	// TODO: Error handling for when the files array has files of different types
-	// TODO: Error handling for when the output file already exists
-	public static void concatenateFiles(ProgressChangedListener listener, File[] files, String output) {
-	    Logger logger = LoggerFactory.getLogger(Concatenator.class);
-	    logger.info("Concatenating files and saving as " + output);
-	    
-		MediaConcatenator concatenator = new MediaConcatenator(0, 1);
+    /**
+     * Concatenates a list of video files all must have the same frame size, audio rates, number of channels, and filetype
+     * 
+     * @param files
+     *            array of files to concatenate together in the order of this array
+     * @param output
+     *            location of the output file
+     */
+    // TODO: Error handling for when the files array has files of different types
+    // TODO: Error handling for when the output file already exists
+    public static void concatenateFiles(ProgressChangedListener listener, File[] files, String output) {
+        logger.info("Concatenating files and saving as " + output);
 
-		IMediaReader[] readers = new IMediaReader[files.length];
-		VideoData data = null;
-		long duration = 0;
-		for (int i = 0; i < files.length; i++) {
-		    data = new VideoData(files[i]);
-			IMediaReader reader = data.getReader();
-			reader.addListener(concatenator);
-			readers[i] = reader;
-			
-			duration += data.getDuration();
-			logger.info(files[i].getAbsolutePath());
-		}
-		
-		IMediaWriter writer = ToolFactory.makeWriter(output);
-		if (listener != null) {
-			ProgressListener progress = new ProgressListener(duration, listener);
-			writer.addListener(progress);
-		}
-		concatenator.addListener(writer);
+        MediaConcatenator concatenator = new MediaConcatenator(0, 1);
 
-		writer.addVideoStream(0, 1, data.getWidth(), data.getHeight());
-		writer.addAudioStream(1, 0, data.getAudioChannels(), data.getAudioSampleRate());
+        IMediaReader[] readers = new IMediaReader[files.length];
+        VideoData data = null;
+        long duration = 0;
+        for (int i = 0; i < files.length; i++) {
+            data = new VideoData(files[i]);
+            IMediaReader reader = data.getReader();
+            reader.addListener(concatenator);
+            readers[i] = reader;
 
-		for (int i = 0; i < readers.length; i++) {
-			while (readers[i].readPacket() == null)
-				;
-		}
-		
-		writer.close();
-		
-		logger.info("Done");
-	}
+            duration += data.getDuration();
+            logger.info(files[i].getAbsolutePath());
+        }
 
-	/**
-	 * Gets a list of files from a directory containing the files to concatenate
-	 * 
-	 * Folder must contain only video files of the same type and parameters
-	 * 
-	 * @param folder
-	 *            folder to search through
-	 * @return an array of files from the folder
-	 */
-	public static File[] getFileList(String folder) {
-		File sourceFolder = new File(folder);
-		File[] result = null;
+        IMediaWriter writer = ToolFactory.makeWriter(output);
+        if (listener != null) {
+            ProgressListener progress = new ProgressListener(duration, listener);
+            writer.addListener(progress);
+        }
+        concatenator.addListener(writer);
 
-		if (sourceFolder.exists() && sourceFolder.isDirectory()) {
-			File[] files = sourceFolder.listFiles();
+        writer.addVideoStream(0, 1, data.getWidth(), data.getHeight());
+        writer.addAudioStream(1, 0, data.getAudioChannels(), data.getAudioSampleRate());
 
-			String extension = "";
-			for (int i = 0; i < files.length; i++) {
-				String name = files[i].getAbsolutePath();
-				int index = name.lastIndexOf('.');
-				if (extension == "") {
-					extension = name.substring(index);
-				} else if (!extension.equals(name.substring(index))) {
-					throw new IllegalArgumentException("Folder contains multiple filetypes.");
-				}
-			}
+        for (int i = 0; i < readers.length; i++) {
+            while (readers[i].readPacket() == null)
+                ;
+        }
 
-			result = files;
-		}
+        writer.close();
 
-		return result;
-	}
+        logger.info("Done");
+    }
+
+    /**
+     * Gets a list of files from a directory containing the files to concatenate
+     * 
+     * Folder must contain only video files of the same type and parameters
+     * 
+     * @param folder
+     *            folder to search through
+     * @return an array of files from the folder
+     */
+    public static File[] getFileList(String folder) {
+        File sourceFolder = new File(folder);
+        File[] result = null;
+
+        if (sourceFolder.exists() && sourceFolder.isDirectory()) {
+            File[] files = sourceFolder.listFiles();
+
+            String extension = "";
+            for (int i = 0; i < files.length; i++) {
+                String name = files[i].getAbsolutePath();
+                int index = name.lastIndexOf('.');
+                if (extension == "") {
+                    extension = name.substring(index);
+                } else if (!extension.equals(name.substring(index))) {
+                    throw new IllegalArgumentException("Folder contains multiple filetypes.");
+                }
+            }
+
+            result = files;
+        }
+
+        return result;
+    }
+
+    @Override
+    public void process(int task) {
+        concatenateFiles(listener, files, outFile);
+    }
+
+    @Override
+    public boolean validate(int task) {
+        if(task == TASK_CONCATENATING){
+            for (int i = 0; i < files.length; i++) {
+                //TODO: Do more validation, like check if all the codecs and frame sizes are the same, etc.
+                if(!files[i].exists()){
+                    logger.error("File not found: " + files[i].getAbsolutePath());
+                    return false;
+                }
+            }
+            
+            File out = new File(outFile);
+            if(out.exists()){
+                if(!overwrite && !out.delete()){ //Just deletes the file if overwrite is set 
+                    //Should not happen unless the gui did not rename the outfile already
+                    out = MainWindow.appendNumberToFileName(out);
+                    if(out != null){
+                        logger.warn("Original outfile existed and cannot overwrite, changed out file to " + out.getAbsolutePath());
+                    }
+                }
+            }
+            
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
