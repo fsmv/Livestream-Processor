@@ -2,6 +2,8 @@ package net.sapium.livestreamprocessor;
 
 import java.io.File;
 
+import com.xuggle.xuggler.IRational;
+
 import net.sapium.livestreamprocessor.utils.VideoData;
 
 import junit.framework.Test;
@@ -27,34 +29,35 @@ public class VideoDataTest extends TestCase {
 	}
 	
 	public void testData(){
-		VideoData test = new VideoData(new File("C:\\Users\\Andrew\\workspace\\java\\Livestream-To-Timelapse\\testcase\\1.mp4"));
-		System.out.println(test.getAudioChannels() + " " + test.getAudioSampleRate() + " " + test.getDuration() + " " + test.getHeight() + " " + test.getWidth());
-		//assertTrue(true);
+	    File testFile = new File("videoDataTest.flv");
+	    testFile.delete();
+	    TestcaseGenerator.generateVideoWithSound(testFile.getAbsolutePath());
+		VideoData test = new VideoData(testFile);
+		
 		boolean result = true;
-		if(test.getAudioChannels() != 2){
+		if(test.getAudioChannels() != 1){
 			result = false;
-		}else if(test.getAudioSampleRate() != 48000){
+			System.out.println("Num audio channels failure; expected: " + 1 + " actual: " + test.getAudioChannels());
+		}else if(test.getAudioSampleRate() != 44100){
 			result = false;
-		}else if(test.getDuration() != 125498){
+			System.out.println("Audio sample-rate failure; expected: " + 44100 + " actual: " + test.getAudioSampleRate());
+		}else if(test.getDuration() != 5015){
 			result = false;
-		}else if(test.getHeight() != 768){
+			System.out.println("Duration failure; expected: " + 5015 + " actual: " + test.getDuration());
+		}else if(test.getHeight() != 600){
 			result = false;
-		}else if(test.getWidth() != 1366){
+			System.out.println("Frame height failure; expected: " + 600 + " actual: " + test.getHeight());
+		}else if(test.getWidth() != 800){
 			result = false;
+			System.out.println("Frame width failure; expected: " + 800 + " actual: " + test.getWidth());
+		}else if(test.getFrameRate().equals(IRational.make(36, 1))){
+		    result = false;
+		    System.out.println("Frame rate failure; expected: " + "36/1" + " actual: " + test.getFrameRate().toString());
 		}
 		
+		if(result){
+		    testFile.delete();
+		}
 		assertTrue(result);
 	}
-	
-	/*public void testConcatenation() {
-		File[] files = {new File("C:\\Users\\Andrew\\workspace\\java\\Livestream-To-Timelapse\\testcase\\1.mp4"), new File("C:\\Users\\Andrew\\workspace\\java\\Livestream-To-Timelapse\\testcase\\2.mp4"), new File("C:\\Users\\Andrew\\workspace\\java\\Livestream-To-Timelapse\\testcase\\3.mp4")};
-		String output = "C:\\Users\\Andrew\\workspace\\java\\Livestream-To-Timelapse\\testcase\\out.mp4";
-		File out = new File(output);
-		if(out.exists()){
-			out.delete();
-		}
-		
-		ProcessingThread.concatenateFiles(null, files, output);
-		assertTrue(true);
-	}*/
 }

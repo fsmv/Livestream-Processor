@@ -19,13 +19,14 @@ public class Concatenator extends Processor {
 
     public Concatenator(ProgressChangedListener listener) {
         super(listener);
-        logger = LoggerFactory.getLogger(Concatenator.class);
     }
 
     public Concatenator(ProgressChangedListener listener, File[] files, String outFile) {
         this(listener);
         this.files = files;
         this.setOutFile(new File(outFile));
+        logger = getLogger();
+        registerTask(TASK_CONCATENATE);
     }
 
     /**
