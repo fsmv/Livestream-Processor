@@ -14,14 +14,14 @@ public class Main {
     public static String ARG_HELP = "help";
 
     public static void main(String[] args) {
-        if (args.length > 1) {
-            if (args[1].equals(ARG_CONCAT)) {
+        if (args.length > 0) {
+            if (args[0].equals(ARG_CONCAT)) {
                 argConcat(args);
-            } else if (args[1].equals(ARG_TIMELAPSE)) {
+            } else if (args[0].equals(ARG_TIMELAPSE)) {
                 argTimelapse(args);
-            } else if (args[1].equals(ARG_DOWNLOAD)) {
+            } else if (args[0].equals(ARG_DOWNLOAD)) {
                 argDownload(args);
-            } else if (args[1].equals(ARG_HELP)) {
+            } else if (args[0].equals(ARG_HELP)) {
                 argHelp(args);
             }
         } else {
@@ -30,9 +30,9 @@ public class Main {
     }
 
     public static void argConcat(String[] args) {
-        if (args.length > 4) {
+        if (args.length > 3) {
             File[] fileList = new File[args.length - 3];
-            for(int i=2; i<args.length-1; i++){
+            for(int i=1; i<args.length-1; i++){
                 int fi = i-2;
                 fileList[fi] = new File(args[i]);
             }
@@ -47,10 +47,10 @@ public class Main {
     }
 
     public static void argTimelapse(String[] args) {
-        if(args.length == 5){
-            File inFile = new File(args[2]);
-            File outFile = new File(args[3]);
-            double speedupFactor = Double.parseDouble(args[4]);
+        if(args.length == 4){
+            File inFile = new File(args[1]);
+            File outFile = new File(args[2]);
+            double speedupFactor = Double.parseDouble(args[3]);
             
             Timelapser timelapser = new Timelapser(new TerminalProgress(), inFile, outFile, speedupFactor);
             timelapser.setCurrentTask(Timelapser.TASK_TIMELAPSE);

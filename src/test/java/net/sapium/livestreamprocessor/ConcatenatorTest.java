@@ -35,6 +35,7 @@ public class ConcatenatorTest extends TestCase {
         concat.setCurrentTask(Concatenator.TASK_CONCATENATE);
         concat.run();
         
-        assertTrue(true);
+        assertTrue(true); //TODO: Some sort of checking to see if the files concatenated correctly
+        //Right now you have to check manually, the gaps in audio are expected (~25ms between videos) becuase my generator leaves empty space at the beginning and end for some reason.
     }
 }
