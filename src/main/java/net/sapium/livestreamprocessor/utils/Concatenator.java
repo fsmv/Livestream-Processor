@@ -2,7 +2,6 @@ package net.sapium.livestreamprocessor.utils;
 
 import java.io.File;
 
-import net.sapium.livestreamprocessor.gui.MainWindow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +14,7 @@ public class Concatenator extends Processor {
 
     private ProgressChangedListener listener;
     private File[] files;
-    private String outFile;
-    private boolean overwrite;
-    public static final int TASK_CONCATENATING = 1;
+    public static final int TASK_CONCATENATE = 1;
     private static Logger logger;
 
     public Concatenator(ProgressChangedListener listener) {
@@ -28,7 +25,7 @@ public class Concatenator extends Processor {
     public Concatenator(ProgressChangedListener listener, File[] files, String outFile) {
         this(listener);
         this.files = files;
-        this.outFile = outFile;
+        this.setOutFile(new File(outFile));
     }
 
     /**
@@ -114,12 +111,14 @@ public class Concatenator extends Processor {
 
     @Override
     public void process(int task) {
-        concatenateFiles(listener, files, outFile);
+        if(task == TASK_CONCATENATE){
+            concatenateFiles(listener, files, getOutFile().getAbsolutePath());
+        }
     }
 
     @Override
     public boolean validate(int task) {
-        if(task == TASK_CONCATENATING){
+        if(task == TASK_CONCATENATE){
             for (int i = 0; i < files.length; i++) {
                 //TODO: Do more validation, like check if all the codecs and frame sizes are the same, etc.
                 if(!files[i].exists()){
@@ -128,15 +127,8 @@ public class Concatenator extends Processor {
                 }
             }
             
-            File out = new File(outFile);
-            if(out.exists()){
-                if(!overwrite && !out.delete()){ //Just deletes the file if overwrite is set 
-                    //Should not happen unless the gui did not rename the outfile already
-                    out = MainWindow.appendNumberToFileName(out);
-                    if(out != null){
-                        logger.warn("Original outfile existed and cannot overwrite, changed out file to " + out.getAbsolutePath());
-                    }
-                }
+            if(validateOutFile() == null){
+                return false;
             }
             
             return true;

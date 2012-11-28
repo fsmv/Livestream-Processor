@@ -5,6 +5,11 @@ What Works
   - Concatenates arbitrary numbers of files
   - Manual ordering of files to concatenate
   - Selection of which files in the list to concatenate
+  - Progress bar updating
+  - Run from command line
+ - Timelapsing files
+  - Speeds up a video by an arbitrary amount
+  - Run from command line
  - Multi-platform building
  - Time remaining predictor
  - Tabs with an independent progress bar, start button, and status output
@@ -13,12 +18,16 @@ What Doesn't (yet)
 ------------------
 
 - Concatenation:
-  - Codec selection? (at least keep it from using the AAC audio codec because xuggler can't handle reading it)
+  - Output codec selection? (at least keep it from using the AAC audio codec because xuggler can't handle reading it)
   - CPU Limiting
   - Cancel operation
   - Show progress by drawing a background on completed files in the list
-- Time Lapse Creator:
-  - Everything
+- Timelapse Creator:
+  - GUI
+  - Final length estimator
+  - Automatic speedup chooser by selecting final length
+  - Add your own audio
+  - Progress listener support
 - Twitch.tv downloader:
   - Everything
 - Run more than one task consecutively without prompting the user

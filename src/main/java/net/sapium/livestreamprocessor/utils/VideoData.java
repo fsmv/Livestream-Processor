@@ -6,6 +6,7 @@ import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IRational;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
@@ -21,6 +22,7 @@ public class VideoData {
 	private int audioSampleRate;
 	private long duration;
 	private IMediaReader reader;
+	private IRational frameRate;
 	
 	public VideoData(File video){
 		if (!video.exists()) {
@@ -37,6 +39,7 @@ public class VideoData {
 			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
 				width = coder.getWidth();
 				height = coder.getHeight();
+				frameRate = coder.getFrameRate();
 			} else if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
 				audioChannels = coder.getChannels();
 				audioSampleRate = coder.getSampleRate();
@@ -71,6 +74,10 @@ public class VideoData {
 	 */
 	public int getAudioSampleRate() {
 		return audioSampleRate;
+	}
+	
+	public IRational getFrameRate(){
+	    return frameRate;
 	}
 
 	/**

@@ -5,6 +5,7 @@ import java.io.File;
 import net.sapium.livestreamprocessor.gui.MainWindow;
 import net.sapium.livestreamprocessor.utils.Concatenator;
 import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
+import net.sapium.livestreamprocessor.utils.Timelapser;
 
 public class Main {
     public static String ARG_CONCAT = "concatenate";
@@ -37,14 +38,22 @@ public class Main {
             }
             String outFile = args[args.length-1];
             
-            new Thread(new Concatenator(new TerminalProgress(), fileList, outFile)).start();
+            new Concatenator(new TerminalProgress(), fileList, outFile).start();
         } else {
             System.out.println("Usage: java -jar LiveProc.jar concatenate [file1] ... [fileN] [outFile]");
         }
     }
 
     public static void argTimelapse(String[] args) {
-
+        if(args.length == 5){
+            File inFile = new File(args[2]);
+            File outFile = new File(args[3]);
+            double speedupFactor = Double.parseDouble(args[4]);
+            
+            new Timelapser(new TerminalProgress(), inFile, outFile, speedupFactor).start();
+        }else{
+            System.out.println("Usage: java -jar LiveProc.jar timelapse [inFile] [outFile] [speedup factor]");
+        }
     }
 
     public static void argDownload(String[] args) {
