@@ -202,7 +202,7 @@ public class TimelapseTab extends TabContent {
                         videoLengthScale.setSelection((int) inVideo.getDuration());
                         videoLengthScale.setPageIncrement((int) (inVideo.getDuration() / 10));
                     }
-                }else{
+                } else {
                     videoLengthText.setEnabled(false);
                     videoLengthScale.setEnabled(false);
                 }
@@ -244,6 +244,11 @@ public class TimelapseTab extends TabContent {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 speedupText.setText("" + speedupScale.getSelection() / 100.0);
+
+                if (videoLengthScale.isEnabled()) {
+                    videoLengthScale.setSelection((int) (videoLengthScale.getMaximum() / (speedupScale.getSelection() / 100.0)));
+                    videoLengthText.setText(TimelapseTab.millisToString(videoLengthScale.getSelection()));
+                }
             }
 
             @Override
@@ -256,10 +261,10 @@ public class TimelapseTab extends TabContent {
             public void handleEvent(Event e) {
                 double val = Double.parseDouble(speedupText.getText());
 
-                if (val < 1.0) {
-                    val = 1.0;
-                } else if (val > 10.0) {
-                    val = 10.0;
+                if (val < speedupScale.getMinimum() / 100.0) {
+                    val = speedupScale.getMinimum() / 100.0;
+                } else if (val > speedupScale.getMaximum() / 100.0) {
+                    val = speedupScale.getMaximum() / 100.0;
                 } else {
                     val = ((int) (val * 100.0)) / 100.0;
                 }
@@ -267,6 +272,11 @@ public class TimelapseTab extends TabContent {
                 speedupText.setText("" + val);
 
                 speedupScale.setSelection((int) (val * 100));
+
+                if (videoLengthScale.isEnabled()) {
+                    videoLengthScale.setSelection((int) (videoLengthScale.getMaximum() / (speedupScale.getSelection() / 100.0)));
+                    videoLengthText.setText(TimelapseTab.millisToString(videoLengthScale.getSelection()));
+                }
             }
         });
 
@@ -276,6 +286,54 @@ public class TimelapseTab extends TabContent {
                 if (e.keyCode == SWT.CR) {
                     speedupText.traverse(SWT.TRAVERSE_TAB_NEXT);
                     speedupText.forceFocus();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
+
+        videoLengthScale.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                videoLengthText.setText(TimelapseTab.millisToString(videoLengthScale.getSelection()));
+
+                speedupScale.setSelection((100 * videoLengthScale.getMaximum()) / videoLengthScale.getSelection());
+                speedupText.setText("" + speedupScale.getSelection() / 100.0);
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+        });
+
+        videoLengthText.addListener(SWT.FocusOut, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                long val = TimelapseTab.parseTime(videoLengthText.getText());
+
+                if (val < videoLengthScale.getMinimum()) {
+                    val = videoLengthScale.getMinimum();
+                    videoLengthText.setText(TimelapseTab.millisToString(val));
+                } else if (val > videoLengthScale.getMaximum()) {
+                    val = videoLengthScale.getMaximum();
+                    videoLengthText.setText(TimelapseTab.millisToString(val));
+                }
+
+                videoLengthScale.setSelection((int) val);
+
+                speedupScale.setSelection((100 * videoLengthScale.getMaximum()) / videoLengthScale.getSelection());
+                speedupText.setText("" + speedupScale.getSelection() / 100.0);
+            }
+        });
+
+        videoLengthText.addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.keyCode == SWT.CR) {
+                    videoLengthText.traverse(SWT.TRAVERSE_TAB_NEXT);
+                    videoLengthText.forceFocus();
                 }
             }
 
@@ -300,7 +358,7 @@ public class TimelapseTab extends TabContent {
     public static String millisToString(long millis) {
         String result = "";
 
-        if (millis > msInHr) {
+        {// Hours
             int hours = (int) (millis / msInHr);
 
             if (hours < 10) {
@@ -308,11 +366,10 @@ public class TimelapseTab extends TabContent {
             } else {
                 result += hours + ":";
             }
-
             millis -= hours * msInHr;
         }
 
-        if (millis > msInMn) {
+        {// Minutes
             int mins = (int) (millis / msInMn);
 
             if (mins < 10) {
@@ -320,16 +377,15 @@ public class TimelapseTab extends TabContent {
             } else {
                 result += mins + ":";
             }
-
             millis -= mins * msInMn;
         }
 
-        if (millis > msInS) {
+        {// Seconds
             int secs = (int) (millis / msInS);
-            
-            if(secs < 10){
+
+            if (secs < 10) {
                 result += "0" + secs;
-            }else{
+            } else {
                 result += secs;
             }
         }
@@ -340,32 +396,40 @@ public class TimelapseTab extends TabContent {
     /**
      * Converts from HH:mm:ss to milliseconds
      * 
-     * @param time
-     *            time string in the form HH:mm:ss
-     * @return milliseconds in HH:mm:ss
+     * @param time time string in the form HH:mm:ss
+     * @return milliseconds in HH:mm:ss, -1 if there was an error
      */
     public static long parseTime(String time) {
         long result = 0;
         String[] sections = time.split(":");
 
-        for (int i = 0; i > sections.length; i--) {
-            long multiplier;
+        if (sections.length == 3) {
+            for (int i = 0; i < sections.length; i++) {
+                long multiplier;
 
-            switch (i) {
-            case 0:
-                multiplier = msInHr;
-                break;
-            case 1:
-                multiplier = msInMn;
-                break;
-            case 2:
-                multiplier = msInS;
-                break;
-            default:
-                multiplier = 0;
+                switch (i) {
+                case 0:
+                    multiplier = msInHr;
+                    break;
+                case 1:
+                    multiplier = msInMn;
+                    break;
+                case 2:
+                    multiplier = msInS;
+                    break;
+                default:
+                    multiplier = 0;
+                }
+
+                try {
+                    result += Integer.parseInt(sections[i]) * multiplier;
+                } catch (NumberFormatException e) {
+                    result = -1;
+                    break;
+                }
             }
-
-            result += Integer.parseInt(sections[i]) * multiplier;
+        }else{
+            result = -1;
         }
 
         return result;
