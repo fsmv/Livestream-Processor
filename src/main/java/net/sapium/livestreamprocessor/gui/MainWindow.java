@@ -142,6 +142,9 @@ public class MainWindow implements ProgressChangedListener {
         
         tbtmTimelapse = new TabItem(tabFolder, SWT.NONE);
         tbtmTimelapse.setText(TIMELAPSE_NAME);
+        
+        TimelapseTab timelapse = new TimelapseTab(tabFolder, SWT.NONE);
+        tbtmTimelapse.setControl(timelapse);
     }
     
     /**
