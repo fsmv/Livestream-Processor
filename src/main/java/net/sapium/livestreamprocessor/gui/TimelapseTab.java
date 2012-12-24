@@ -34,14 +34,15 @@ public class TimelapseTab extends TabContent {
     private Text speedupText;
     private Scale videoLengthScale;
     private Text videoLengthText;
-    private Text audioText;
-    private Button removeAudioRadio;
+    private Text audioTextBox;
+    private Button changeAudioRadio;
     private Button speedUpAudioRadio;
     private Button audioButton;
 
     public static final long msInHr = 1000 * 60 * 60;
     public static final long msInMn = 1000 * 60;
     public static final long msInS = 1000;
+    private Button removeAudioRadio;
 
     public TimelapseTab(Composite arg0, int arg1) {
         super(arg0, arg1);
@@ -153,12 +154,12 @@ public class TimelapseTab extends TabContent {
         speedUpAudioRadio.setLayoutData(fd_btnSpeedUpAudio);
         speedUpAudioRadio.setText("Speed up audio");
 
-        removeAudioRadio = new Button(this, SWT.RADIO);
-        FormData fd_btnRemoveAudio = new FormData();
-        fd_btnRemoveAudio.top = new FormAttachment(videoLengthScale, 6);
-        fd_btnRemoveAudio.left = new FormAttachment(speedUpAudioRadio, 6);
-        removeAudioRadio.setLayoutData(fd_btnRemoveAudio);
-        removeAudioRadio.setText("Replace Audio");
+        changeAudioRadio = new Button(this, SWT.RADIO);
+        FormData fd_changeAudioRadio = new FormData();
+        fd_changeAudioRadio.top = new FormAttachment(videoLengthScale, 6);
+        fd_changeAudioRadio.left = new FormAttachment(speedUpAudioRadio, 6);
+        changeAudioRadio.setLayoutData(fd_changeAudioRadio);
+        changeAudioRadio.setText("Replace Audio");
 
         Label lblAudioFile = new Label(this, SWT.NONE);
         FormData fd_lblAudioFile = new FormData();
@@ -166,22 +167,29 @@ public class TimelapseTab extends TabContent {
         lblAudioFile.setLayoutData(fd_lblAudioFile);
         lblAudioFile.setText("Audio File:");
 
-        audioText = new Text(this, SWT.BORDER);
-        audioText.setEnabled(false);
-        fd_lblAudioFile.top = new FormAttachment(audioText, 3, SWT.TOP);
-        FormData fd_audioText = new FormData();
-        fd_audioText.right = new FormAttachment(outputTextBox, 0, SWT.RIGHT);
-        fd_audioText.top = new FormAttachment(speedUpAudioRadio, 6);
-        fd_audioText.left = new FormAttachment(inputTextBox, 0, SWT.LEFT);
-        audioText.setLayoutData(fd_audioText);
+        audioTextBox = new Text(this, SWT.BORDER);
+        audioTextBox.setEnabled(false);
+        fd_lblAudioFile.top = new FormAttachment(audioTextBox, 3, SWT.TOP);
+        FormData fd_audioTextBox = new FormData();
+        fd_audioTextBox.right = new FormAttachment(outputTextBox, 0, SWT.RIGHT);
+        fd_audioTextBox.top = new FormAttachment(speedUpAudioRadio, 6);
+        fd_audioTextBox.left = new FormAttachment(inputTextBox, 0, SWT.LEFT);
+        audioTextBox.setLayoutData(fd_audioTextBox);
 
         audioButton = new Button(this, SWT.NONE);
         audioButton.setEnabled(false);
-        FormData fd_btnNewButton = new FormData();
-        fd_btnNewButton.top = new FormAttachment(lblAudioFile, -5, SWT.TOP);
-        fd_btnNewButton.left = new FormAttachment(inputButton, 0, SWT.LEFT);
-        audioButton.setLayoutData(fd_btnNewButton);
+        FormData fd_audioButton = new FormData();
+        fd_audioButton.top = new FormAttachment(lblAudioFile, -5, SWT.TOP);
+        fd_audioButton.left = new FormAttachment(inputButton, 0, SWT.LEFT);
+        audioButton.setLayoutData(fd_audioButton);
         audioButton.setText("Browse");
+        
+        removeAudioRadio = new Button(this, SWT.RADIO);
+        FormData fd_removeAudioRadio = new FormData();
+        fd_removeAudioRadio.top = new FormAttachment(videoLengthScale, 6);
+        fd_removeAudioRadio.left = new FormAttachment(changeAudioRadio, 6);
+        removeAudioRadio.setLayoutData(fd_removeAudioRadio);
+        removeAudioRadio.setText("Remove Audio");
     }
 
     @Override
@@ -339,6 +347,35 @@ public class TimelapseTab extends TabContent {
 
             @Override
             public void keyReleased(KeyEvent e) {
+            }
+        });
+        
+        changeAudioRadio.addSelectionListener(new SelectionListener(){
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                audioTextBox.setEnabled(changeAudioRadio.getSelection());
+                audioButton.setEnabled(changeAudioRadio.getSelection());
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+        });
+        
+        final FileDialog audioDialog = new FileDialog((Shell) this.getParent().getParent(), SWT.OPEN);
+        
+        audioButton.addSelectionListener(new SelectionListener(){
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String result = audioDialog.open();
+                
+                if(result != null){
+                    audioTextBox.setText(result);
+                }
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
             }
         });
     }
