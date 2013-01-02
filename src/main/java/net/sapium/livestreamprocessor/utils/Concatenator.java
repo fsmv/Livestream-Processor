@@ -2,9 +2,7 @@ package net.sapium.livestreamprocessor.utils;
 
 import java.io.File;
 
-
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.IMediaWriter;
@@ -12,7 +10,6 @@ import com.xuggle.mediatool.ToolFactory;
 
 public class Concatenator extends Processor {
 
-    private ProgressChangedListener listener;
     private File[] files;
     public static final int TASK_CONCATENATE = 1;
     private static Logger logger;
@@ -38,7 +35,6 @@ public class Concatenator extends Processor {
      *            location of the output file
      */
     // TODO: Error handling for when the files array has files of different types
-    // TODO: Error handling for when the output file already exists
     public static void concatenateFiles(ProgressChangedListener listener, File[] files, String output) {
         logger.info("Concatenating files and saving as " + output);
 
@@ -112,28 +108,28 @@ public class Concatenator extends Processor {
 
     @Override
     public void process(int task) {
-        if(task == TASK_CONCATENATE){
-            concatenateFiles(listener, files, getOutFile().getAbsolutePath());
+        if (task == TASK_CONCATENATE) {
+            concatenateFiles(this.getListener(), files, getOutFile().getAbsolutePath());
         }
     }
 
     @Override
     public boolean validate(int task) {
-        if(task == TASK_CONCATENATE){
+        if (task == TASK_CONCATENATE) {
             for (int i = 0; i < files.length; i++) {
-                //TODO: Do more validation, like check if all the codecs and frame sizes are the same, etc.
-                if(!files[i].exists()){
+                // TODO: Do more validation, like check if all the codecs and frame sizes are the same, etc.
+                if (!files[i].exists()) {
                     logger.error("File not found: " + files[i].getAbsolutePath());
                     return false;
                 }
             }
-            
-            if(validateOutFile() == null){
+
+            if (validateOutFile() == null) {
                 return false;
             }
-            
+
             return true;
-        }else{
+        } else {
             return false;
         }
     }

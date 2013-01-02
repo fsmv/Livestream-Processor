@@ -224,8 +224,10 @@ public class ConcatenateTab extends TabContent {
                     for (int i = 0; i < size; i++) {
                         fileList[i] = new File(new File(folderTextBox.getText()).getAbsolutePath() + "\\" + checkedItems.get(i).getText());
                     }
-
-                    Thread concatenateThread = new Thread(new Concatenator(listener, fileList, outputFile.getAbsolutePath()));
+                    
+                    Concatenator concat = new Concatenator(listener, fileList, outputFile.getAbsolutePath());
+                    concat.setCurrentTask(Concatenator.TASK_CONCATENATE);
+                    Thread concatenateThread = new Thread(concat);
                     concatenateThread.start();
                 }
             }
