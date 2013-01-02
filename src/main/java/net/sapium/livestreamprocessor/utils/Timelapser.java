@@ -9,8 +9,11 @@ import com.xuggle.mediatool.ToolFactory;
 public class Timelapser extends Processor {
 
     public static final int TASK_TIMELAPSE = 1;
+    
     private File inFile;
     private double speedupFactor;
+    private int audioOption;
+    private File audioFile;
 
     public Timelapser(ProgressChangedListener listener) {
         super(listener);
@@ -23,6 +26,13 @@ public class Timelapser extends Processor {
         this.inFile = inFile;
         this.setOutFile(outFile);
         this.speedupFactor = speedupFactor;
+        this.audioOption = MediaTimelapser.AUDIO_REMOVE;
+    }
+    
+    public Timelapser(ProgressChangedListener listener, File inFile, File outFile, double speedupFactor, int audioOption, File audioFile) {
+        this(listener, inFile, outFile, speedupFactor);
+        this.audioOption = audioOption;
+        this.audioFile = audioFile;
     }
     
     public void setInFile(File inFile){
@@ -49,6 +59,18 @@ public class Timelapser extends Processor {
             getLogger().error("Out file could not be validated: " + getOutFile().getAbsolutePath());
             return false;
         }
+        
+        if(audioOption == MediaTimelapser.AUDIO_REPLACE){
+            if(!audioFile.isFile() || !audioFile.exists()) {
+                getLogger().error("Audio file could not be read: " + audioFile.getAbsolutePath());
+                return false;
+            }
+        }
+        
+        if(audioOption != MediaTimelapser.AUDIO_REMOVE && audioOption != MediaTimelapser.AUDIO_REPLACE && audioOption != MediaTimelapser.AUDIO_SPEED_UP){
+            getLogger().error("Invalid audio option: " + audioOption);
+            return false;
+        }
 
         return true;
     }
@@ -56,7 +78,7 @@ public class Timelapser extends Processor {
     @Override
     public void process(int task) {
         if (task == TASK_TIMELAPSE) {
-            MediaTimelapser timelapseAdapter = new MediaTimelapser(speedupFactor); // do not hard code this value
+            MediaTimelapser timelapseAdapter = new MediaTimelapser(speedupFactor, audioOption);
             VideoData inVid = new VideoData(inFile);
             IMediaReader reader = inVid.getReader();
 
@@ -64,10 +86,23 @@ public class Timelapser extends Processor {
 
             IMediaWriter writer = ToolFactory.makeWriter(getOutFile().getAbsolutePath());
             writer.addVideoStream(0, 1, inVid.getWidth(), inVid.getHeight());
+            if(audioOption == MediaTimelapser.AUDIO_SPEED_UP || audioOption == MediaTimelapser.AUDIO_REPLACE){
+                writer.addAudioStream(1, 1, inVid.getAudioChannels(), inVid.getAudioSampleRate());
+            }
             timelapseAdapter.addListener(writer);
 
             while (reader.readPacket() == null)
                 ;
+            
+            if(audioOption == MediaTimelapser.AUDIO_REPLACE){
+                VideoData audio = new VideoData(audioFile);
+                IMediaReader audioReader = audio.getReader();
+                
+                audioReader.addListener(timelapseAdapter);
+                
+                while (audioReader.readPacket() == null)
+                    ;
+            }
 
             writer.close();
         }
