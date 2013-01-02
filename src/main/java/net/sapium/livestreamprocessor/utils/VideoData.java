@@ -90,4 +90,14 @@ public class VideoData {
 	public IMediaReader getReader(){
 	    return reader;
 	}
+	
+	@Override
+	public String toString(){
+	    return "Duration: " + this.getDuration() + 
+	            "\nFrame Width: " + this.getWidth() +
+	            "\nFrame Height: " + this.getHeight() + 
+	            "\nFrame Rate: " + this.getFrameRate() +
+	            "\nAudio Channels: " + this.getAudioChannels() + 
+	            "\nAudio Sample Rate: " + this.getAudioSampleRate(); 
+	}
 }
