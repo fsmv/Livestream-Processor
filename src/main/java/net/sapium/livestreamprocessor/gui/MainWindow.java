@@ -99,6 +99,12 @@ public class MainWindow implements ProgressChangedListener {
         final ConcatenateTab concatTab = new ConcatenateTab(tabFolder, SWT.NONE);
         tbtmConcatenate.setControl(concatTab);
         
+        tbtmTimelapse = new TabItem(tabFolder, SWT.NONE);
+        tbtmTimelapse.setText(TIMELAPSE_NAME);
+        
+        final TimelapseTab timelapseTab = new TimelapseTab(tabFolder, SWT.NONE);
+        tbtmTimelapse.setControl(timelapseTab);
+        
         startButton = new Button(shell, SWT.FLAT);
         fd_tabFolder.bottom = new FormAttachment(startButton, -2);
         startButton.setText("Start");
@@ -116,7 +122,7 @@ public class MainWindow implements ProgressChangedListener {
                         concatTab.start(MainWindow.this);
                         break;
                     case TIMELAPSE_NAME:
-                        //TODO: Run timelapse tab start
+                        timelapseTab.start(MainWindow.this);
                         break;
                     case DOWNLOADER_NAME:
                         //TODO: Run downloader tab start
@@ -139,12 +145,6 @@ public class MainWindow implements ProgressChangedListener {
         fd_statusLabel.right = new FormAttachment(progressBar, 0, SWT.RIGHT);
         fd_statusLabel.left = new FormAttachment(startButton, 6);
         statusLabel.setLayoutData(fd_statusLabel);
-        
-        tbtmTimelapse = new TabItem(tabFolder, SWT.NONE);
-        tbtmTimelapse.setText(TIMELAPSE_NAME);
-        
-        TimelapseTab timelapse = new TimelapseTab(tabFolder, SWT.NONE);
-        tbtmTimelapse.setControl(timelapse);
     }
     
     /**

@@ -3,6 +3,7 @@ package net.sapium.livestreamprocessor.gui;
 import java.io.File;
 
 import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
+import net.sapium.livestreamprocessor.utils.Timelapser;
 import net.sapium.livestreamprocessor.utils.VideoData;
 
 import org.eclipse.swt.SWT;
@@ -382,7 +383,10 @@ public class TimelapseTab extends TabContent {
 
     @Override
     protected void start(ProgressChangedListener listener) {
-
+        if (!outputTextBox.getText().equals("") && !inputTextBox.getText().equals("")) {
+            Thread timelapseThread = new Thread(new Timelapser(listener, new File(inputTextBox.getText()), new File(outputTextBox.getText()), Double.parseDouble(speedupText.getText())));
+            timelapseThread.start();
+        }
     }
 
     /**
