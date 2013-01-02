@@ -43,8 +43,8 @@ public class TimelapserTest extends TestCase {
         testData2.getReader().close();
         
         if(Math.abs(ratio - speedupFactor) < 0.1){
-           // timelapseTestVideo.delete();
-            //timelapseOutVideo.delete();
+            timelapseTestVideo.delete();
+            timelapseOutVideo.delete();
             assertTrue(true);
         }else{
             assertEquals(speedupFactor, ratio);

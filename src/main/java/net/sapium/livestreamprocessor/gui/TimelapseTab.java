@@ -384,7 +384,9 @@ public class TimelapseTab extends TabContent {
     @Override
     protected void start(ProgressChangedListener listener) {
         if (!outputTextBox.getText().equals("") && !inputTextBox.getText().equals("")) {
-            Thread timelapseThread = new Thread(new Timelapser(listener, new File(inputTextBox.getText()), new File(outputTextBox.getText()), Double.parseDouble(speedupText.getText())));
+            Timelapser timelapser = new Timelapser(listener, new File(inputTextBox.getText()), new File(outputTextBox.getText()), Double.parseDouble(speedupText.getText()));
+            timelapser.setCurrentTask(Timelapser.TASK_TIMELAPSE);
+            Thread timelapseThread = new Thread(timelapser);
             timelapseThread.start();
         }
     }
