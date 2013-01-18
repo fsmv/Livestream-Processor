@@ -10,6 +10,9 @@ What Works
  - Timelapsing files
   - Speeds up a video by an arbitrary amount
   - Run from command line
+  - Final length estimator
+  - Choose amount to speed up by end video length or by multiplier
+  - Displays progress
  - Multi-platform building
  - Time remaining predictor
  - Tabs with an independent progress bar, start button, and status output
@@ -20,21 +23,15 @@ What Doesn't (yet)
 - Concatenation:
   - Output codec selection? (at least keep it from using the AAC audio codec because xuggler can't handle reading it)
   - CPU Limiting
-  - Cancel operation
   - Show progress by drawing a background on completed files in the list
 - Timelapse Creator:
-  - GUI
-  - Final length estimator
-  - Automatic speedup chooser by selecting final length
   - Add your own audio
-  - Progress listener support
+  - Speed up in-place audio
 - Twitch.tv downloader:
   - Everything
 - Run more than one task consecutively without prompting the user
  - Download -> Concatenate -> Timelapse
  - Concatenate -> Timelapse
-- JUnit Tests
-- Running in terminal only mode
 - Program Icon
 - About dialog
 
@@ -50,7 +47,7 @@ To build for a specific platform run `mvn package -P win32,!win64,!linux32,!linu
 Credits
 -------
 
- - Maven configuration and class loader: [Multiplatform SWT](https://github.com/jendap/multiplatform-swt)
+ - Class loader (MultiPlatformSwtHelper.java) and parts of the Maven configuration file: [Multiplatform SWT](https://github.com/jendap/multiplatform-swt)
  - Video Library: [Xuggler](http://www.xuggle.com/xuggler/)
  - GUI: [SWT](http://www.eclipse.org/swt/)
  - Ideas about loading SWT and a snippet on using jar-in-jar-loader: [SWTJar](http://mchr3k.github.com/swtjar/)
