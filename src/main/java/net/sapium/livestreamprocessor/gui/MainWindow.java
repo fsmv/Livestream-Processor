@@ -35,9 +35,10 @@ public class MainWindow implements ProgressChangedListener {
     private int remainingTimeIndex;
     private final int remainingTimeHistory = 100;
     private TabFolder tabFolder;
-    private TabItem tbtmConcatenate;
-    private TabItem tbtmTimelapse;
+    private TabContent concatTab;
+    private TabContent timelapseTab;
     private static Button startButton;
+    private static Button cancelButton;
     private static Logger logger;
     
     public static final String CONCAT_NAME = "Concatenate";
@@ -95,16 +96,16 @@ public class MainWindow implements ProgressChangedListener {
    
         startButton = new Button(shell, SWT.FLAT);
         
-        tbtmConcatenate = new TabItem(tabFolder, SWT.NONE);
+        TabItem tbtmConcatenate = new TabItem(tabFolder, SWT.NONE);
         tbtmConcatenate.setText(CONCAT_NAME);
 
-        final ConcatenateTab concatTab = new ConcatenateTab(tabFolder, SWT.NONE);
+        concatTab = new ConcatenateTab(tabFolder, SWT.NONE);
         tbtmConcatenate.setControl(concatTab);
         
-        tbtmTimelapse = new TabItem(tabFolder, SWT.NONE);
+        TabItem tbtmTimelapse = new TabItem(tabFolder, SWT.NONE);
         tbtmTimelapse.setText(TIMELAPSE_NAME);
         
-        final TimelapseTab timelapseTab = new TimelapseTab(tabFolder, SWT.NONE);
+        timelapseTab = new TimelapseTab(tabFolder, SWT.NONE);
         tbtmTimelapse.setControl(timelapseTab);
         
         fd_tabFolder.bottom = new FormAttachment(startButton, -2);
@@ -116,36 +117,56 @@ public class MainWindow implements ProgressChangedListener {
         startButton.addSelectionListener(new SelectionListener(){
             @Override
             public void widgetSelected(SelectionEvent e) {
-                TabItem[] selectedTabs = tabFolder.getSelection();
-                if(selectedTabs.length > 0){
-                    switch(selectedTabs[0].getText()){
-                    case CONCAT_NAME:
-                        concatTab.start(MainWindow.this);
-                        break;
-                    case TIMELAPSE_NAME:
-                        timelapseTab.start(MainWindow.this);
-                        break;
-                    case DOWNLOADER_NAME:
-                        //TODO: Run downloader tab start
-                        break;
-                    default:
-                        MainWindow.logger.warn("Tab name not found: " + selectedTabs[0].getText());
-                    }
-                }
+                getActiveTab().start(MainWindow.this);
             }
 
             @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
+            public void widgetDefaultSelected(SelectionEvent e) {}
         });
         
         statusLabel = new Label(shell, SWT.NONE);
         statusLabel.setAlignment(SWT.RIGHT);
         FormData fd_statusLabel = new FormData();
+        fd_statusLabel.right = new FormAttachment(100, -10);
         fd_statusLabel.top = new FormAttachment(startButton, 5, SWT.TOP);
-        fd_statusLabel.right = new FormAttachment(progressBar, 0, SWT.RIGHT);
-        fd_statusLabel.left = new FormAttachment(startButton, 6);
         statusLabel.setLayoutData(fd_statusLabel);
+        
+        cancelButton = new Button(shell, SWT.NONE);
+        fd_statusLabel.left = new FormAttachment(cancelButton, 6);
+        FormData fd_cancelButton = new FormData();
+        fd_cancelButton.top = new FormAttachment(startButton, 0, SWT.TOP);
+        fd_cancelButton.left = new FormAttachment(startButton, 6);
+        cancelButton.setLayoutData(fd_cancelButton);
+        cancelButton.setText("Cancel");
+        cancelButton.setEnabled(false);
+        cancelButton.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                getActiveTab().cancel();
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {}
+        });
+    }
+    
+    public TabContent getActiveTab() {
+        TabItem[] selectedTabs = tabFolder.getSelection();
+        if(selectedTabs.length > 0){
+            switch(selectedTabs[0].getText()){
+            case CONCAT_NAME:
+                return concatTab;
+            case TIMELAPSE_NAME:
+                return timelapseTab;
+            case DOWNLOADER_NAME:
+                //TODO: return downloader tab
+                break;
+            default:
+                MainWindow.logger.warn("Tab name not found: " + selectedTabs[0].getText());
+            }
+        }
+        
+        return null;
     }
     
     /**
@@ -163,6 +184,10 @@ public class MainWindow implements ProgressChangedListener {
     
     public static Button getStartButton() {
         return startButton;
+    }
+    
+    public static Button getCancelButton() {
+        return cancelButton;
     }
 
     public void onProgressChanged(double progress) {

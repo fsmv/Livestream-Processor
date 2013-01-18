@@ -20,7 +20,7 @@ public interface ProgressChangedListener {
 	public void onTaskStarted();
 	
 	/**
-	 * Called when a file is closed and progress is higher than 98.0%
+	 * Called when the operation is canceled or is finished
 	 */
 	public void onTaskEnded();
 }

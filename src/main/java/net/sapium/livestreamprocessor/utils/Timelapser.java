@@ -7,9 +7,6 @@ import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
 
 public class Timelapser extends Processor {
-
-    public static final int TASK_TIMELAPSE = 1;
-    
     private File inFile;
     private double speedupFactor;
     private int audioOption;
@@ -17,8 +14,6 @@ public class Timelapser extends Processor {
 
     public Timelapser(ProgressChangedListener listener) {
         super(listener);
-
-        registerTask(TASK_TIMELAPSE);
     }
 
     public Timelapser(ProgressChangedListener listener, File inFile, File outFile, double speedupFactor) {
@@ -28,28 +23,28 @@ public class Timelapser extends Processor {
         this.speedupFactor = speedupFactor;
         this.audioOption = MediaTimelapser.AUDIO_REMOVE;
     }
-    
+
     public Timelapser(ProgressChangedListener listener, File inFile, File outFile, double speedupFactor, int audioOption, File audioFile) {
         this(listener, inFile, outFile, speedupFactor);
         this.audioOption = audioOption;
         this.audioFile = audioFile;
     }
-    
-    public void setInFile(File inFile){
+
+    public void setInFile(File inFile) {
         this.inFile = inFile;
     }
-    
-    public void setSpeedupFactor(double speedupFactor){
+
+    public void setSpeedupFactor(double speedupFactor) {
         this.speedupFactor = speedupFactor;
     }
 
     @Override
-    public boolean validate(int task) {
-        if(speedupFactor <= 0){
+    public boolean validate() {
+        if (speedupFactor <= 0) {
             getLogger().error("Speed up factor is invalid: " + speedupFactor);
             return false;
         }
-        
+
         if (!inFile.isFile() || !inFile.exists()) {
             getLogger().error("In file could not be read: " + inFile.getAbsolutePath());
             return false;
@@ -59,15 +54,15 @@ public class Timelapser extends Processor {
             getLogger().error("Out file could not be validated: " + getOutFile().getAbsolutePath());
             return false;
         }
-        
-        if(audioOption == MediaTimelapser.AUDIO_REPLACE){
-            if(!audioFile.isFile() || !audioFile.exists()) {
+
+        if (audioOption == MediaTimelapser.AUDIO_REPLACE) {
+            if (!audioFile.isFile() || !audioFile.exists()) {
                 getLogger().error("Audio file could not be read: " + audioFile.getAbsolutePath());
                 return false;
             }
         }
-        
-        if(audioOption != MediaTimelapser.AUDIO_REMOVE && audioOption != MediaTimelapser.AUDIO_REPLACE && audioOption != MediaTimelapser.AUDIO_SPEED_UP){
+
+        if (audioOption != MediaTimelapser.AUDIO_REMOVE && audioOption != MediaTimelapser.AUDIO_REPLACE && audioOption != MediaTimelapser.AUDIO_SPEED_UP) {
             getLogger().error("Invalid audio option: " + audioOption);
             return false;
         }
@@ -76,41 +71,46 @@ public class Timelapser extends Processor {
     }
 
     @Override
-    public void process(int task) {
-        if (task == TASK_TIMELAPSE) {
-            MediaTimelapser timelapseAdapter = new MediaTimelapser(speedupFactor, audioOption);
-            VideoData inVid = new VideoData(inFile);
-            IMediaReader reader = inVid.getReader();
+    public void process() {
+        MediaTimelapser timelapseAdapter = new MediaTimelapser(speedupFactor, audioOption);
+        VideoData inVid = new VideoData(inFile);
+        IMediaReader reader = inVid.getReader();
 
-            reader.addListener(timelapseAdapter);
+        reader.addListener(timelapseAdapter);
 
-            IMediaWriter writer = ToolFactory.makeWriter(getOutFile().getAbsolutePath());
-            ProgressChangedListener listener = this.getListener();
-            if (listener != null) {
-                long duration = (long) (inVid.getDuration() / speedupFactor);
-                ProgressListener progress = new ProgressListener(duration, listener);
-                writer.addListener(progress);
-            }
-            writer.addVideoStream(0, 1, inVid.getWidth(), inVid.getHeight());
-            if(audioOption == MediaTimelapser.AUDIO_SPEED_UP || audioOption == MediaTimelapser.AUDIO_REPLACE){
-                writer.addAudioStream(1, 1, inVid.getAudioChannels(), inVid.getAudioSampleRate());
-            }
-            timelapseAdapter.addListener(writer);
+        IMediaWriter writer = ToolFactory.makeWriter(getOutFile().getAbsolutePath());
+        ProgressChangedListener listener = this.getListener();
+        if (listener != null) {
+            long duration = (long) (inVid.getDuration() / speedupFactor);
+            ProgressListener progress = new ProgressListener(duration, listener);
+            writer.addListener(progress);
+        }
+        writer.addVideoStream(0, 1, inVid.getWidth(), inVid.getHeight());
+        if (audioOption == MediaTimelapser.AUDIO_SPEED_UP || audioOption == MediaTimelapser.AUDIO_REPLACE) {
+            writer.addAudioStream(1, 1, inVid.getAudioChannels(), inVid.getAudioSampleRate());
+        }
+        timelapseAdapter.addListener(writer);
 
-            while (reader.readPacket() == null)
-                ;
-            
-            if(audioOption == MediaTimelapser.AUDIO_REPLACE){
+        while (reader.readPacket() == null && this.shouldContinue())
+            ;
+        if(this.shouldContinue()){
+            if (audioOption == MediaTimelapser.AUDIO_REPLACE) {
                 VideoData audio = new VideoData(audioFile);
                 IMediaReader audioReader = audio.getReader();
-                
+    
                 audioReader.addListener(timelapseAdapter);
-                
-                while (audioReader.readPacket() == null)
+    
+                while (audioReader.readPacket() == null && this.shouldContinue())
                     ;
             }
-
-            writer.close();
+    
+        }
+        
+        writer.close();
+        
+        if(!this.shouldContinue()){
+            getOutFile().delete();
+            listener.onTaskEnded();
         }
     }
 }

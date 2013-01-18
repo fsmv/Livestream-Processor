@@ -1,5 +1,6 @@
 package net.sapium.livestreamprocessor.gui;
 
+import net.sapium.livestreamprocessor.utils.Processor;
 import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
 
 import org.eclipse.swt.widgets.Composite;
@@ -10,11 +11,22 @@ import org.eclipse.swt.widgets.Composite;
  * @author Andrew Kallmeyer
  */
 public abstract class TabContent extends Composite {
-
+    
+    protected Processor processor;
+    
     public TabContent(Composite arg0, int arg1) {
         super(arg0, arg1);
         createContents();
         addListeners();
+    }
+    
+    /**
+     * Cancel the running operation
+     */
+    public void cancel() {
+        if(processor != null && processor.isRunning()) {
+            processor.cancel();
+        }
     }
     
     /**

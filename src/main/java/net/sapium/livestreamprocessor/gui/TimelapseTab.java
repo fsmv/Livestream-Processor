@@ -184,7 +184,7 @@ public class TimelapseTab extends TabContent {
         fd_audioButton.left = new FormAttachment(inputButton, 0, SWT.LEFT);
         audioButton.setLayoutData(fd_audioButton);
         audioButton.setText("Browse");
-        
+
         removeAudioRadio = new Button(this, SWT.RADIO);
         FormData fd_removeAudioRadio = new FormData();
         fd_removeAudioRadio.top = new FormAttachment(videoLengthScale, 6);
@@ -350,8 +350,8 @@ public class TimelapseTab extends TabContent {
             public void keyReleased(KeyEvent e) {
             }
         });
-        
-        changeAudioRadio.addSelectionListener(new SelectionListener(){
+
+        changeAudioRadio.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 audioTextBox.setEnabled(changeAudioRadio.getSelection());
@@ -362,15 +362,15 @@ public class TimelapseTab extends TabContent {
             public void widgetDefaultSelected(SelectionEvent e) {
             }
         });
-        
+
         final FileDialog audioDialog = new FileDialog((Shell) this.getParent().getParent(), SWT.OPEN);
-        
-        audioButton.addSelectionListener(new SelectionListener(){
+
+        audioButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 String result = audioDialog.open();
-                
-                if(result != null){
+
+                if (result != null) {
                     audioTextBox.setText(result);
                 }
             }
@@ -384,11 +384,11 @@ public class TimelapseTab extends TabContent {
     @Override
     protected void start(ProgressChangedListener listener) {
         if (!outputTextBox.getText().equals("") && !inputTextBox.getText().equals("")) {
-            Timelapser timelapser = new Timelapser(listener, new File(inputTextBox.getText()), new File(outputTextBox.getText()), Double.parseDouble(speedupText.getText()));
-            timelapser.setCurrentTask(Timelapser.TASK_TIMELAPSE);
-            Thread timelapseThread = new Thread(timelapser);
+            processor = new Timelapser(listener, new File(inputTextBox.getText()), new File(outputTextBox.getText()), Double.parseDouble(speedupText.getText()));
+            Thread timelapseThread = new Thread(processor);
             timelapseThread.start();
             MainWindow.getStartButton().setEnabled(false);
+            MainWindow.getCancelButton().setEnabled(true);
         }
     }
 
@@ -440,7 +440,8 @@ public class TimelapseTab extends TabContent {
     /**
      * Converts from HH:mm:ss to milliseconds
      * 
-     * @param time time string in the form HH:mm:ss
+     * @param time
+     *            time string in the form HH:mm:ss
      * @return milliseconds in HH:mm:ss, -1 if there was an error
      */
     public static long parseTime(String time) {
@@ -472,7 +473,7 @@ public class TimelapseTab extends TabContent {
                     break;
                 }
             }
-        }else{
+        } else {
             result = -1;
         }
 

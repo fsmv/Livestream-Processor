@@ -30,7 +30,6 @@ public class TimelapserTest extends TestCase {
         
         Timelapser timelapser = new Timelapser(null, timelapseTestVideo, timelapseOutVideo, speedupFactor);
         System.out.println(timelapser.getOutFile().getAbsolutePath());
-        timelapser.setCurrentTask(Timelapser.TASK_TIMELAPSE);
         
         timelapser.run(); //Not in a thread because the method will end and the test won't get to run
         

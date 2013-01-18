@@ -39,7 +39,6 @@ public class Main {
             String outFile = args[args.length-1];
             
             Concatenator concat = new Concatenator(new TerminalProgress(), fileList, outFile);
-            concat.setCurrentTask(Concatenator.TASK_CONCATENATE);
             concat.run();
         } else {
             System.out.println("Usage: java -jar LiveProc.jar concatenate [file1] ... [fileN] [outFile]");
@@ -53,7 +52,6 @@ public class Main {
             double speedupFactor = Double.parseDouble(args[3]);
             
             Timelapser timelapser = new Timelapser(new TerminalProgress(), inFile, outFile, speedupFactor);
-            timelapser.setCurrentTask(Timelapser.TASK_TIMELAPSE);
             timelapser.run();
         }else{
             System.out.println("Usage: java -jar LiveProc.jar timelapse [inFile] [outFile] [speedup factor]");

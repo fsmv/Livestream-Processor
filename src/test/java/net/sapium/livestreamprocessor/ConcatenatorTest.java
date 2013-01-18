@@ -32,7 +32,6 @@ public class ConcatenatorTest extends TestCase {
         
         TestcaseGenerator.generateSplitVideoWithSound(file1.getAbsolutePath(), file2.getAbsolutePath(), file3.getAbsolutePath());
         Concatenator concat = new Concatenator(null, fileList, outFile.getAbsolutePath());
-        concat.setCurrentTask(Concatenator.TASK_CONCATENATE);
         concat.run();
         
         assertTrue(true); //TODO: Some sort of checking to see if the files concatenated correctly

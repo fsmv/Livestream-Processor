@@ -11,7 +11,6 @@ import com.xuggle.mediatool.ToolFactory;
 public class Concatenator extends Processor {
 
     private File[] files;
-    public static final int TASK_CONCATENATE = 1;
     private static Logger logger;
 
     public Concatenator(ProgressChangedListener listener) {
@@ -23,7 +22,6 @@ public class Concatenator extends Processor {
         this.files = files;
         this.setOutFile(new File(outFile));
         logger = getLogger();
-        registerTask(TASK_CONCATENATE);
     }
 
     /**
@@ -35,7 +33,7 @@ public class Concatenator extends Processor {
      *            location of the output file
      */
     // TODO: Error handling for when the files array has files of different types
-    public static void concatenateFiles(ProgressChangedListener listener, File[] files, String output) {
+    public void concatenateFiles(ProgressChangedListener listener, File[] files, String output) {
         logger.info("Concatenating files and saving as " + output);
 
         MediaConcatenator concatenator = new MediaConcatenator(0, 1);
@@ -64,13 +62,16 @@ public class Concatenator extends Processor {
         writer.addAudioStream(1, 0, data.getAudioChannels(), data.getAudioSampleRate());
 
         for (int i = 0; i < readers.length; i++) {
-            while (readers[i].readPacket() == null)
+            while (this.shouldContinue() && readers[i].readPacket() == null)
                 ;
         }
 
         writer.close();
-
-        logger.info("Done");
+        
+        if(!this.shouldContinue()) {
+            new File(output).delete();
+            listener.onTaskEnded();
+        }
     }
 
     /**
@@ -107,30 +108,24 @@ public class Concatenator extends Processor {
     }
 
     @Override
-    public void process(int task) {
-        if (task == TASK_CONCATENATE) {
-            concatenateFiles(this.getListener(), files, getOutFile().getAbsolutePath());
-        }
+    public void process() {
+        concatenateFiles(this.getListener(), files, getOutFile().getAbsolutePath());
     }
 
     @Override
-    public boolean validate(int task) {
-        if (task == TASK_CONCATENATE) {
-            for (int i = 0; i < files.length; i++) {
-                // TODO: Do more validation, like check if all the codecs and frame sizes are the same, etc.
-                if (!files[i].exists()) {
-                    logger.error("File not found: " + files[i].getAbsolutePath());
-                    return false;
-                }
-            }
-
-            if (validateOutFile() == null) {
+    public boolean validate() {
+        for (int i = 0; i < files.length; i++) {
+            // TODO: Do more validation, like check if all the codecs and frame sizes are the same, etc.
+            if (!files[i].exists()) {
+                logger.error("File not found: " + files[i].getAbsolutePath());
                 return false;
             }
+        }
 
-            return true;
-        } else {
+        if (validateOutFile() == null) {
             return false;
         }
+
+        return true;
     }
 }

@@ -204,7 +204,7 @@ public class ConcatenateTab extends TabContent {
             }
         });
     }
-
+    
     @Override
     protected void start(ProgressChangedListener listener) {
         if (!outputTextBox.getText().equals("") && !folderTextBox.getText().equals("")) {
@@ -225,11 +225,11 @@ public class ConcatenateTab extends TabContent {
                         fileList[i] = new File(new File(folderTextBox.getText()).getAbsolutePath() + "\\" + checkedItems.get(i).getText());
                     }
                     
-                    Concatenator concat = new Concatenator(listener, fileList, outputFile.getAbsolutePath());
-                    concat.setCurrentTask(Concatenator.TASK_CONCATENATE);
-                    Thread concatenateThread = new Thread(concat);
+                    processor = new Concatenator(listener, fileList, outputFile.getAbsolutePath());
+                    Thread concatenateThread = new Thread(processor);
                     concatenateThread.start();
                     MainWindow.getStartButton().setEnabled(false);
+                    MainWindow.getCancelButton().setEnabled(true);
                 }
             }
         }
