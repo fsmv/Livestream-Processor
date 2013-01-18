@@ -229,6 +229,7 @@ public class ConcatenateTab extends TabContent {
                     concat.setCurrentTask(Concatenator.TASK_CONCATENATE);
                     Thread concatenateThread = new Thread(concat);
                     concatenateThread.start();
+                    MainWindow.getStartButton().setEnabled(false);
                 }
             }
         }

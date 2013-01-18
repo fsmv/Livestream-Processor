@@ -37,7 +37,7 @@ public class MainWindow implements ProgressChangedListener {
     private TabFolder tabFolder;
     private TabItem tbtmConcatenate;
     private TabItem tbtmTimelapse;
-    private Button startButton;
+    private static Button startButton;
     private static Logger logger;
     
     public static final String CONCAT_NAME = "Concatenate";
@@ -92,6 +92,8 @@ public class MainWindow implements ProgressChangedListener {
         fd_tabFolder.left = new FormAttachment(0, 10);
         fd_tabFolder.right = new FormAttachment(100, -10);
         tabFolder.setLayoutData(fd_tabFolder);
+   
+        startButton = new Button(shell, SWT.FLAT);
         
         tbtmConcatenate = new TabItem(tabFolder, SWT.NONE);
         tbtmConcatenate.setText(CONCAT_NAME);
@@ -105,7 +107,6 @@ public class MainWindow implements ProgressChangedListener {
         final TimelapseTab timelapseTab = new TimelapseTab(tabFolder, SWT.NONE);
         tbtmTimelapse.setControl(timelapseTab);
         
-        startButton = new Button(shell, SWT.FLAT);
         fd_tabFolder.bottom = new FormAttachment(startButton, -2);
         startButton.setText("Start");
         FormData fd_startButton = new FormData();
@@ -158,6 +159,10 @@ public class MainWindow implements ProgressChangedListener {
         if (item == null)
             item = bar.getItem(null);
         return item;
+    }
+    
+    public static Button getStartButton() {
+        return startButton;
     }
 
     public void onProgressChanged(double progress) {
@@ -230,6 +235,7 @@ public class MainWindow implements ProgressChangedListener {
                 }
                 progressBar.setSelection(0);
                 statusLabel.setText("Done");
+                MainWindow.getStartButton().setEnabled(true);
             }
         });
     }

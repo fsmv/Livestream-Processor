@@ -388,6 +388,7 @@ public class TimelapseTab extends TabContent {
             timelapser.setCurrentTask(Timelapser.TASK_TIMELAPSE);
             Thread timelapseThread = new Thread(timelapser);
             timelapseThread.start();
+            MainWindow.getStartButton().setEnabled(false);
         }
     }
 
