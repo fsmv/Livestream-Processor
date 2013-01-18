@@ -85,6 +85,12 @@ public class Timelapser extends Processor {
             reader.addListener(timelapseAdapter);
 
             IMediaWriter writer = ToolFactory.makeWriter(getOutFile().getAbsolutePath());
+            ProgressChangedListener listener = this.getListener();
+            if (listener != null) {
+                long duration = (long) (inVid.getDuration() / speedupFactor);
+                ProgressListener progress = new ProgressListener(duration, listener);
+                writer.addListener(progress);
+            }
             writer.addVideoStream(0, 1, inVid.getWidth(), inVid.getHeight());
             if(audioOption == MediaTimelapser.AUDIO_SPEED_UP || audioOption == MediaTimelapser.AUDIO_REPLACE){
                 writer.addAudioStream(1, 1, inVid.getAudioChannels(), inVid.getAudioSampleRate());
