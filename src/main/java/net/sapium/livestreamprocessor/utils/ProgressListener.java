@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 
 import com.xuggle.mediatool.MediaListenerAdapter;
+import com.xuggle.mediatool.event.IAudioSamplesEvent;
 import com.xuggle.mediatool.event.ICloseEvent;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 
@@ -14,14 +15,29 @@ import com.xuggle.mediatool.event.IVideoPictureEvent;
  */
 public class ProgressListener extends MediaListenerAdapter {
 
+    //This is just a constant for when you're replacing audio so the percent completion is approximately correct before switching to the audio replacing part
+    private static final double percentForVideo = 0.70;
+    
 	private long finalDuration;
+	private long audioDuration;
 	private double progress;
 	private ProgressChangedListener listener;
 	private boolean started;
+	private boolean isSeperatelyAddingAudio;
 	
 	public ProgressListener(long finalDuration, ProgressChangedListener listener) {
 		this.finalDuration = finalDuration;
 		this.listener = listener;
+		this.isSeperatelyAddingAudio = false;
+		this.audioDuration = -1;
+	}
+	
+	public ProgressListener(long finalDuration, ProgressChangedListener listener, boolean isSeperatelyAddingAudio, long audioDuration){
+	    this.finalDuration = finalDuration;
+        this.listener = listener;
+        
+        this.isSeperatelyAddingAudio = isSeperatelyAddingAudio;
+        this.audioDuration = audioDuration;
 	}
 	
 	public void onVideoPicture(IVideoPictureEvent event) {
@@ -32,8 +48,23 @@ public class ProgressListener extends MediaListenerAdapter {
 	    
 		long currentTime = event.getTimeStamp(TimeUnit.MILLISECONDS);
 		
-		progress = 1 - ((finalDuration - currentTime)/(double)finalDuration);
+		if(!isSeperatelyAddingAudio){
+		    progress = 1 - ((finalDuration - currentTime)/(double)finalDuration);
+		}else{
+		    progress = percentForVideo - ((finalDuration - currentTime)/(double)finalDuration)*percentForVideo;
+		}
+		
 		listener.onProgressChanged(progress);
+	}
+	
+	public void onAudioSamples(IAudioSamplesEvent event){
+	    if(isSeperatelyAddingAudio && (int)(progress * 100.0) >= (int)(percentForVideo*100.0) - 4){
+            long currentTime = event.getTimeStamp(TimeUnit.MILLISECONDS);
+            
+            progress = 1 - ((audioDuration - currentTime)/(double)audioDuration)*(1-percentForVideo);
+            
+            listener.onProgressChanged(progress);
+	    }
 	}
 	
 	public void onClose(ICloseEvent event) {

@@ -80,17 +80,23 @@ public class Timelapser extends Processor {
 
         IMediaWriter writer = ToolFactory.makeWriter(getOutFile().getAbsolutePath());
         ProgressChangedListener listener = this.getListener();
+        VideoData audioData = null;
         if (listener != null) {
             long duration = (long) (inVid.getDuration() / speedupFactor);
-            ProgressListener progress = new ProgressListener(duration, listener);
+            ProgressListener progress;
+            if(audioOption == MediaTimelapser.AUDIO_REPLACE){
+                audioData = new VideoData(audioFile);
+                long audioLength = inVid.getDuration() < audioData.getDuration() ? inVid.getDuration() : audioData.getDuration(); 
+                progress = new ProgressListener(duration, listener, true, audioLength);
+            }else{
+                progress = new ProgressListener(duration, listener);
+            }
             writer.addListener(progress);
         }
         writer.addVideoStream(0, 1, inVid.getWidth(), inVid.getHeight());
-        VideoData audioData = null;
         if (audioOption == MediaTimelapser.AUDIO_SPEED_UP) {
             writer.addAudioStream(1, 1, inVid.getAudioChannels(), inVid.getAudioSampleRate());
         } else if (audioOption == MediaTimelapser.AUDIO_REPLACE) {
-            audioData = new VideoData(audioFile);
             writer.addAudioStream(1, 1, audioData.getAudioChannels(), audioData.getAudioSampleRate());
         }
         timelapseAdapter.addListener(writer);
@@ -110,7 +116,15 @@ public class Timelapser extends Processor {
         }
 
         writer.close();
+        
+        if(audioData != null){
+            audioData.getReader().close();
+        }
 
+        if(inVid != null){
+            inVid.getReader().close();
+        }
+        
         if (!this.shouldContinue()) {
             getOutFile().delete();
             listener.onTaskEnded();

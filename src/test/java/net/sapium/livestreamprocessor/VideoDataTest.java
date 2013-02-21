@@ -55,6 +55,8 @@ public class VideoDataTest extends TestCase {
 		    System.out.println("Frame rate failure; expected: " + "36/1" + " actual: " + test.getFrameRate().toString());
 		}
 		
+		test.getReader().close();
+		
 		if(result){
 		    testFile.delete();
 		}

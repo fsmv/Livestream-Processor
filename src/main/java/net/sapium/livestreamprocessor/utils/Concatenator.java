@@ -67,6 +67,10 @@ public class Concatenator extends Processor {
         }
 
         writer.close();
+
+        for(int i=0; i<readers.length; i++){
+            readers[i].close();
+        }
         
         if(!this.shouldContinue()) {
             new File(output).delete();

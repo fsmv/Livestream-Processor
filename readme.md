@@ -13,6 +13,8 @@ What Works
   - Final length estimator
   - Choose amount to speed up by end video length or by multiplier
   - Displays progress
+  - Add your own audio
+  - Speed up in-place audio
  - Multi-platform building
  - Time remaining predictor
  - Tabs with an independent progress bar, start button, and status output
@@ -20,20 +22,19 @@ What Works
 What Doesn't (yet)
 ------------------
 
-- Concatenation:
+ - Concatenation:
   - Output codec selection? (at least keep it from using the AAC audio codec because xuggler can't handle reading it)
   - CPU Limiting
   - Show progress by drawing a background on completed files in the list
-- Timelapse Creator:
-  - Add your own audio
-  - Speed up in-place audio
-- Twitch.tv downloader:
+ - Timelapse Creator:
+  - It all works!
+ - Twitch.tv downloader:
   - Everything
-- Run more than one task consecutively without prompting the user
- - Download -> Concatenate -> Timelapse
- - Concatenate -> Timelapse
-- Program Icon
-- About dialog
+ - Run more than one task consecutively without prompting the user
+  - Download -> Concatenate -> Timelapse
+  - Concatenate -> Timelapse
+ - Program Icon
+ - About dialog
 
 Building
 --------
@@ -51,4 +52,4 @@ Credits
  - Video Library: [Xuggler](http://www.xuggle.com/xuggler/)
  - GUI: [SWT](http://www.eclipse.org/swt/)
  - Ideas about loading SWT and a snippet on using jar-in-jar-loader: [SWTJar](http://mchr3k.github.com/swtjar/)
- - Loading interal jars: jar-in-jar-loader.jar
+ - Loading internal jars: jar-in-jar-loader.jar

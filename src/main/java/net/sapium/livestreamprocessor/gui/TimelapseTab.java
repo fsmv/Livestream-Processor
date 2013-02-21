@@ -212,6 +212,8 @@ public class TimelapseTab extends TabContent {
                         videoLengthScale.setSelection((int) inVideo.getDuration());
                         videoLengthScale.setPageIncrement((int) (inVideo.getDuration() / 10));
                     }
+                    
+                    inVideo.getReader().close();
                 } else {
                     videoLengthText.setEnabled(false);
                     videoLengthScale.setEnabled(false);
