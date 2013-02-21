@@ -133,8 +133,8 @@ public class ConcatenateTab extends TabContent {
         });
 
         final FileDialog outputDialog = new FileDialog((Shell) this.getParent().getParent(), SWT.SAVE);
-        String[] filter = { "*.mp4" };
-        outputDialog.setFilterNames(filter);
+        outputDialog.setFilterNames(filterNames);
+        outputDialog.setFilterExtensions(filterExtensions);
         outputDialog.setOverwrite(true);
 
         outputButton.addSelectionListener(new SelectionListener() {

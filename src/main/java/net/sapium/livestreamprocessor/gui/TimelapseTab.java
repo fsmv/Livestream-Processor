@@ -99,6 +99,7 @@ public class TimelapseTab extends TabContent {
         outputButton.setLayoutData(fd_outputButton);
 
         speedupScale = new Scale(this, SWT.NONE);
+        speedupScale.setEnabled(false);
         speedupScale.setMaximum(100 * maxSpeedup);
         speedupScale.setMinimum(100);
         speedupScale.setPageIncrement(100);
@@ -207,7 +208,8 @@ public class TimelapseTab extends TabContent {
                     if (inVideo.getDuration() > 0) {
                         videoLengthText.setEnabled(true);
                         videoLengthText.setText(TimelapseTab.millisToString(inVideo.getDuration()));
-
+                        
+                        speedupScale.setEnabled(true);
                         videoLengthScale.setEnabled(true);
                         videoLengthScale.setMaximum((int) inVideo.getDuration());
                         videoLengthScale.setMinimum((int) (inVideo.getDuration() / maxSpeedup));
@@ -217,6 +219,7 @@ public class TimelapseTab extends TabContent {
                     
                     inVideo.getReader().close();
                 } else {
+                    speedupScale.setEnabled(false);
                     videoLengthText.setEnabled(false);
                     videoLengthScale.setEnabled(false);
                 }
@@ -224,7 +227,9 @@ public class TimelapseTab extends TabContent {
         });
 
         final FileDialog inputDialog = new FileDialog((Shell) this.getParent().getParent(), SWT.OPEN);
-
+        inputDialog.setFilterNames(filterNames);
+        inputDialog.setFilterExtensions(filterExtensions);
+        
         inputButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -240,6 +245,8 @@ public class TimelapseTab extends TabContent {
         });
 
         final FileDialog outputDialog = new FileDialog((Shell) this.getParent().getParent(), SWT.SAVE);
+        outputDialog.setFilterNames(filterNames);
+        outputDialog.setFilterExtensions(filterExtensions);
         outputDialog.setOverwrite(true);
 
         outputButton.addSelectionListener(new SelectionListener() {

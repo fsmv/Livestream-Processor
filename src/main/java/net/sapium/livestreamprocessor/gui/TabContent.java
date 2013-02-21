@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets.Composite;
  * @author Andrew Kallmeyer
  */
 public abstract class TabContent extends Composite {
+    public static final String[] filterNames = { "Video files", "All files" };
+    public static final String[] filterExtensions = {"*.flv;*.mp4;*.ogg;*.avi;*.mov", "*.*"};
     
     protected Processor processor;
     
