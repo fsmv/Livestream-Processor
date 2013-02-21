@@ -28,6 +28,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class TimelapseTab extends TabContent {
+    private static final int maxSpeedup = 500;
+    
     private Text inputTextBox;
     private Button inputButton;
     private Text outputTextBox;
@@ -97,7 +99,7 @@ public class TimelapseTab extends TabContent {
         outputButton.setLayoutData(fd_outputButton);
 
         speedupScale = new Scale(this, SWT.NONE);
-        speedupScale.setMaximum(1000);
+        speedupScale.setMaximum(100 * maxSpeedup);
         speedupScale.setMinimum(100);
         speedupScale.setPageIncrement(100);
         FormData fd_speedupScale = new FormData();
@@ -208,9 +210,9 @@ public class TimelapseTab extends TabContent {
 
                         videoLengthScale.setEnabled(true);
                         videoLengthScale.setMaximum((int) inVideo.getDuration());
-                        videoLengthScale.setMinimum((int) (inVideo.getDuration() / 10));
+                        videoLengthScale.setMinimum((int) (inVideo.getDuration() / maxSpeedup));
                         videoLengthScale.setSelection((int) inVideo.getDuration());
-                        videoLengthScale.setPageIncrement((int) (inVideo.getDuration() / 10));
+                        videoLengthScale.setPageIncrement((int) (inVideo.getDuration() / maxSpeedup));
                     }
                     
                     inVideo.getReader().close();
