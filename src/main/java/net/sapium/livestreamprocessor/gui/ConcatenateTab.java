@@ -228,8 +228,6 @@ public class ConcatenateTab extends TabContent {
                     processor = new Concatenator(listener, fileList, outputFile.getAbsolutePath());
                     Thread concatenateThread = new Thread(processor);
                     concatenateThread.start();
-                    MainWindow.getStartButton().setEnabled(false);
-                    MainWindow.getCancelButton().setEnabled(true);
                 }
             }
         }

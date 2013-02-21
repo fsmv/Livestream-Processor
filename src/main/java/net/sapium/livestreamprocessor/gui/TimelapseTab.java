@@ -2,6 +2,7 @@ package net.sapium.livestreamprocessor.gui;
 
 import java.io.File;
 
+import net.sapium.livestreamprocessor.utils.MediaTimelapser;
 import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
 import net.sapium.livestreamprocessor.utils.Timelapser;
 import net.sapium.livestreamprocessor.utils.VideoData;
@@ -384,11 +385,18 @@ public class TimelapseTab extends TabContent {
     @Override
     protected void start(ProgressChangedListener listener) {
         if (!outputTextBox.getText().equals("") && !inputTextBox.getText().equals("")) {
-            processor = new Timelapser(listener, new File(inputTextBox.getText()), new File(outputTextBox.getText()), Double.parseDouble(speedupText.getText()));
+            int audioOption = MediaTimelapser.AUDIO_REMOVE;
+            String audioFile = "";
+            if(changeAudioRadio.getSelection()){
+                audioOption = MediaTimelapser.AUDIO_REPLACE;
+                audioFile = audioTextBox.getText();
+            }else if(speedUpAudioRadio.getSelection()){
+                audioOption = MediaTimelapser.AUDIO_SPEED_UP;
+            }
+            
+            processor = new Timelapser(listener, new File(inputTextBox.getText()), new File(outputTextBox.getText()), Double.parseDouble(speedupText.getText()), audioOption, new File(audioFile));
             Thread timelapseThread = new Thread(processor);
             timelapseThread.start();
-            MainWindow.getStartButton().setEnabled(false);
-            MainWindow.getCancelButton().setEnabled(true);
         }
     }
 

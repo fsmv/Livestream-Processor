@@ -86,29 +86,32 @@ public class Timelapser extends Processor {
             writer.addListener(progress);
         }
         writer.addVideoStream(0, 1, inVid.getWidth(), inVid.getHeight());
-        if (audioOption == MediaTimelapser.AUDIO_SPEED_UP || audioOption == MediaTimelapser.AUDIO_REPLACE) {
+        VideoData audioData = null;
+        if (audioOption == MediaTimelapser.AUDIO_SPEED_UP) {
             writer.addAudioStream(1, 1, inVid.getAudioChannels(), inVid.getAudioSampleRate());
+        } else if (audioOption == MediaTimelapser.AUDIO_REPLACE) {
+            audioData = new VideoData(audioFile);
+            writer.addAudioStream(1, 1, audioData.getAudioChannels(), audioData.getAudioSampleRate());
         }
         timelapseAdapter.addListener(writer);
 
         while (reader.readPacket() == null && this.shouldContinue())
             ;
-        if(this.shouldContinue()){
+
+        if (this.shouldContinue()) {
             if (audioOption == MediaTimelapser.AUDIO_REPLACE) {
-                VideoData audio = new VideoData(audioFile);
-                IMediaReader audioReader = audio.getReader();
-    
+                IMediaReader audioReader = audioData.getReader();
+
                 audioReader.addListener(timelapseAdapter);
-    
+
                 while (audioReader.readPacket() == null && this.shouldContinue())
                     ;
             }
-    
         }
-        
+
         writer.close();
-        
-        if(!this.shouldContinue()){
+
+        if (!this.shouldContinue()) {
             getOutFile().delete();
             listener.onTaskEnded();
         }

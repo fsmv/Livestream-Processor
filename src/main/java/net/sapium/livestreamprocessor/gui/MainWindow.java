@@ -238,9 +238,13 @@ public class MainWindow implements ProgressChangedListener {
         setTaskStartTime(System.nanoTime());
         remainingTimeList = new ArrayList<Long>(remainingTimeHistory);
         remainingTimeIndex = 0;
+        
         display.asyncExec(new Runnable() {
             @Override
             public void run() {
+                MainWindow.getStartButton().setEnabled(false);
+                MainWindow.getCancelButton().setEnabled(true);
+                
                 if (taskBarItem != null) {
                     taskBarItem.setProgressState(SWT.NORMAL);
                 }
@@ -260,7 +264,9 @@ public class MainWindow implements ProgressChangedListener {
                 }
                 progressBar.setSelection(0);
                 statusLabel.setText("Done");
+                
                 MainWindow.getStartButton().setEnabled(true);
+                MainWindow.getCancelButton().setEnabled(false);
             }
         });
     }
