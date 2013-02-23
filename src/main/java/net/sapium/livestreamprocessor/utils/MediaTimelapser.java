@@ -10,8 +10,6 @@ import com.xuggle.mediatool.event.IOpenCoderEvent;
 import com.xuggle.mediatool.event.IOpenEvent;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.mediatool.event.VideoPictureEvent;
-import com.xuggle.xuggler.IAudioResampler;
-import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.IAudioSamples.Format;
 import com.xuggle.xuggler.IVideoPicture;
 

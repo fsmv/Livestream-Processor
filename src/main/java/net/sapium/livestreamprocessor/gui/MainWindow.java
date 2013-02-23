@@ -7,6 +7,7 @@ import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -44,7 +45,16 @@ public class MainWindow implements ProgressChangedListener {
     public static final String CONCAT_NAME = "Concatenate";
     public static final String TIMELAPSE_NAME = "Timelapse";
     public static final String DOWNLOADER_NAME = "Twitch.tv Downloader";
-
+    
+    private static final String icon16 = "/icon16.png";
+    private static final String icon24 = "/icon24.png";
+    private static final String icon32 = "/icon32.png";
+    private static final String icon48 = "/icon48.png";
+    private static final String icon64 = "/icon64.png";
+    private static final String icon128 = "/icon128.png";
+    private static final String icon256 = "/icon256.png";
+    private static final String icon512 = "/icon512.png";
+    
     public static void main(String[] args) {
         logger = LoggerFactory.getLogger(MainWindow.class);
         try {
@@ -73,8 +83,18 @@ public class MainWindow implements ProgressChangedListener {
     protected void createContents() {
         display = new Display();
         shell = new Shell(display);
-        shell.setSize(450, 401);
+        shell.setSize(450, 400);
         shell.setText("Livestream Processor");
+        Image[] images = new Image[] { 
+                new Image(display, MainWindow.class.getResourceAsStream(icon16)),
+                new Image(display, MainWindow.class.getResourceAsStream(icon24)), 
+                new Image(display, MainWindow.class.getResourceAsStream(icon32)), 
+                new Image(display, MainWindow.class.getResourceAsStream(icon48)), 
+                new Image(display, MainWindow.class.getResourceAsStream(icon64)), 
+                new Image(display, MainWindow.class.getResourceAsStream(icon128)), 
+                new Image(display, MainWindow.class.getResourceAsStream(icon256)), 
+                new Image(display, MainWindow.class.getResourceAsStream(icon512))};
+        shell.setImages(images);
         shell.setLayout(new FormLayout());
 
         taskBarItem = getTaskBarItem();
