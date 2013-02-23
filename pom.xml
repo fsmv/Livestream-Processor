@@ -2,12 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.sapium.livetolapse</groupId>
-    <artifactId>Livestream-To-Timelapse</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <groupId>net.sapium.livestreamprocessor</groupId>
+    <artifactId>Livestream-Processor</artifactId>
+    <version>v0.8</version>
     <packaging>jar</packaging>
 
-    <name>Livestream-To-Timelapse</name>
+    <name>Livestream-Processor</name>
     <url>http://sapium.net/projects/livestream-processor</url>
     
     <scm>

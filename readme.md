@@ -1,3 +1,13 @@
+Downloads
+---------
+v0.8:
+ - [Linux 64 bit](http://code.google.com/p/livestream-processor/downloads/detail?name=Livestream-Processor-v0.8-linux64.jar)
+ - [Linux 32 bit](http://code.google.com/p/livestream-processor/downloads/detail?name=Livestream-Processor-v0.8-linux32.jar)
+ - [Windows 64 bit](http://code.google.com/p/livestream-processor/downloads/detail?name=Livestream-Processor-v0.8-win64.jar)
+ - [Windows 32 bit](http://code.google.com/p/livestream-processor/downloads/detail?name=Livestream-Processor-v0.8-win32.jar)
+ - [Mac 64 bit](http://code.google.com/p/livestream-processor/downloads/detail?name=Livestream-Processor-v0.8-mac64.jar)
+ - [Mac 32 bit](http://code.google.com/p/livestream-processor/downloads/detail?name=Livestream-Processor-v0.8-mac32.jar)
+
 What Works
 ----------
 
@@ -53,3 +63,4 @@ Credits
  - GUI: [SWT](http://www.eclipse.org/swt/)
  - Ideas about loading SWT and a snippet on using jar-in-jar-loader: [SWTJar](http://mchr3k.github.com/swtjar/)
  - Loading internal jars: jar-in-jar-loader.jar
+ - Application icon: Antonio Lassandro
