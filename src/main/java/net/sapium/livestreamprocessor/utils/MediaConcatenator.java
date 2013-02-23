@@ -17,10 +17,8 @@
  * along with Xuggle-Xuggler-Main.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
 
-/**
- * Modified from the original
- * 
- * @author Andrew Kallmeyer
+/*
+ * Modified by Andrew Kallmeyer in 2012
  */
 
 package net.sapium.livestreamprocessor.utils;
