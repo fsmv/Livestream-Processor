@@ -20,6 +20,7 @@ package net.sapium.livestreamprocessor.gui;
 import java.io.File;
 
 import net.sapium.livestreamprocessor.utils.MediaTimelapser;
+import net.sapium.livestreamprocessor.utils.Profiler;
 import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
 import net.sapium.livestreamprocessor.utils.Timelapser;
 import net.sapium.livestreamprocessor.utils.VideoData;
@@ -119,12 +120,13 @@ public class TimelapseTab extends TabContent {
         speedupScale.setEnabled(false);
         speedupScale.setMaximum(100 * maxSpeedup);
         speedupScale.setMinimum(100);
-        speedupScale.setPageIncrement(100);
+        speedupScale.setPageIncrement(10 * maxSpeedup);
         FormData fd_speedupScale = new FormData();
         fd_speedupScale.top = new FormAttachment(outputTextBox, 6);
         speedupScale.setLayoutData(fd_speedupScale);
 
         speedupText = new Text(this, SWT.BORDER);
+        speedupText.setEnabled(false);
         fd_speedupScale.right = new FormAttachment(speedupText, -6);
         speedupText.setText("1.0");
         FormData fd_speedupText = new FormData();
@@ -226,17 +228,24 @@ public class TimelapseTab extends TabContent {
                         videoLengthText.setEnabled(true);
                         videoLengthText.setText(TimelapseTab.millisToString(inVideo.getDuration()));
                         
-                        speedupScale.setEnabled(true);
                         videoLengthScale.setEnabled(true);
                         videoLengthScale.setMaximum((int) inVideo.getDuration());
                         videoLengthScale.setMinimum((int) (inVideo.getDuration() / maxSpeedup));
                         videoLengthScale.setSelection((int) inVideo.getDuration());
-                        videoLengthScale.setPageIncrement((int) (inVideo.getDuration() / maxSpeedup));
+                        videoLengthScale.setPageIncrement((int) (inVideo.getDuration() / 10));
+                        
+                        System.out.println(videoLengthScale.getMaximum() +","+ videoLengthScale.getMinimum());
+                        
+                        speedupScale.setEnabled(true);
+                        speedupText.setEnabled(true);
+                        speedupText.setText("1.0");
+                        speedupScale.setSelection(1);
                     }
                     
                     inVideo.getReader().close();
                 } else {
                     speedupScale.setEnabled(false);
+                    speedupText.setEnabled(false);
                     videoLengthText.setEnabled(false);
                     videoLengthScale.setEnabled(false);
                 }
@@ -335,10 +344,12 @@ public class TimelapseTab extends TabContent {
         videoLengthScale.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                long test = System.currentTimeMillis();
                 videoLengthText.setText(TimelapseTab.millisToString(videoLengthScale.getSelection()));
 
                 speedupScale.setSelection((100 * videoLengthScale.getMaximum()) / videoLengthScale.getSelection());
                 speedupText.setText("" + speedupScale.getSelection() / 100.0);
+                System.out.println(System.currentTimeMillis() - test);
             }
 
             @Override
@@ -349,8 +360,8 @@ public class TimelapseTab extends TabContent {
         videoLengthText.addListener(SWT.FocusOut, new Listener() {
             @Override
             public void handleEvent(Event event) {
+                System.out.println("video length text");
                 long val = TimelapseTab.parseTime(videoLengthText.getText());
-
                 if (val < videoLengthScale.getMinimum()) {
                     val = videoLengthScale.getMinimum();
                     videoLengthText.setText(TimelapseTab.millisToString(val));
@@ -360,8 +371,7 @@ public class TimelapseTab extends TabContent {
                 }
 
                 videoLengthScale.setSelection((int) val);
-
-                speedupScale.setSelection((100 * videoLengthScale.getMaximum()) / videoLengthScale.getSelection());
+                speedupScale.setSelection((int)((100.0 * videoLengthScale.getMaximum()) / videoLengthScale.getSelection()));
                 speedupText.setText("" + speedupScale.getSelection() / 100.0);
             }
         });
@@ -437,9 +447,9 @@ public class TimelapseTab extends TabContent {
      */
     public static String millisToString(long millis) {
         String result = "";
-
+        
         {// Hours
-            int hours = (int) (millis / msInHr);
+            int hours = (int)(millis / msInHr);
 
             if (hours < 10) {
                 result += "0" + hours + ":";
