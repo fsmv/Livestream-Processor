@@ -20,7 +20,6 @@ package net.sapium.livestreamprocessor.gui;
 import java.io.File;
 
 import net.sapium.livestreamprocessor.utils.MediaTimelapser;
-import net.sapium.livestreamprocessor.utils.Profiler;
 import net.sapium.livestreamprocessor.utils.ProgressChangedListener;
 import net.sapium.livestreamprocessor.utils.Timelapser;
 import net.sapium.livestreamprocessor.utils.VideoData;
@@ -234,8 +233,6 @@ public class TimelapseTab extends TabContent {
                         videoLengthScale.setSelection((int) inVideo.getDuration());
                         videoLengthScale.setPageIncrement((int) (inVideo.getDuration() / 10));
                         
-                        System.out.println(videoLengthScale.getMaximum() +","+ videoLengthScale.getMinimum());
-                        
                         speedupScale.setEnabled(true);
                         speedupText.setEnabled(true);
                         speedupText.setText("1.0");
@@ -344,12 +341,10 @@ public class TimelapseTab extends TabContent {
         videoLengthScale.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                long test = System.currentTimeMillis();
                 videoLengthText.setText(TimelapseTab.millisToString(videoLengthScale.getSelection()));
 
-                speedupScale.setSelection((100 * videoLengthScale.getMaximum()) / videoLengthScale.getSelection());
+                speedupScale.setSelection((int) ((100.0 * videoLengthScale.getMaximum()) / videoLengthScale.getSelection()));
                 speedupText.setText("" + speedupScale.getSelection() / 100.0);
-                System.out.println(System.currentTimeMillis() - test);
             }
 
             @Override
@@ -360,7 +355,6 @@ public class TimelapseTab extends TabContent {
         videoLengthText.addListener(SWT.FocusOut, new Listener() {
             @Override
             public void handleEvent(Event event) {
-                System.out.println("video length text");
                 long val = TimelapseTab.parseTime(videoLengthText.getText());
                 if (val < videoLengthScale.getMinimum()) {
                     val = videoLengthScale.getMinimum();
