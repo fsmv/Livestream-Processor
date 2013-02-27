@@ -1,26 +1,24 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.sapium.livestreamprocessor</groupId>
     <artifactId>Livestream-Processor</artifactId>
-    <version>v0.8</version>
     <packaging>jar</packaging>
 
-    <name>Livestream-Processor</name>
+    <name>Livestream Processor</name>
     <url>http://sapium.net/projects/livestream-processor</url>
-    
+
     <scm>
         <url>https://github.com/Fsmv/Livestream-Processor.git</url>
         <connection>scm:git:git@github.com:Fsmv/Livestream-Processor.git</connection>
         <developerConnection>scm:git:git@github.com:Fsmv/Livestream-Processor.git</developerConnection>
     </scm>
-    
+
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/Fsmv/Livestream-Processor/issues/</url>
     </issueManagement>
-    
+
     <developers>
         <developer>
             <id>andrew.kallmeyer</id>
@@ -34,21 +32,24 @@
             <id>xuggle repo</id>
             <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
         </repository>
-        
+
         <repository>
             <id>swt repo</id>
             <url>http://swt-maven.googlecode.com/git-history/master/</url>
         </repository>
     </repositories>
-    
+
     <properties>
         <jdk.version>1.7</jdk.version>
         <swt.version>4.2.1</swt.version>
         <main.class>net.sapium.livestreamprocessor.Main</main.class>
         <lib.directory>lib</lib.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.numeric>0.8</version.numeric>
     </properties>
-    
+
+    <version>v${version.numeric}</version>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -74,7 +75,7 @@
             <systemPath>${basedir}/lib/jar-in-jar-loader.jar</systemPath>
         </dependency>
     </dependencies>
-  
+
     <build>
         <plugins>
             <plugin>
@@ -165,7 +166,8 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Assembly plugin builds the final zip package. -->
+
+            <!-- Assembly plugin builds the final jar package. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -196,7 +198,7 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <profiles>
         <profile>
             <id>linux32</id>
@@ -267,7 +269,7 @@
                 <xuggle.arch>i686-w64-mingw32</xuggle.arch>
                 <filename.suffix>win32</filename.suffix>
             </properties>
-            </profile>
+        </profile>
         <profile>
             <id>win64</id>
             <activation>
@@ -281,6 +283,55 @@
                 <xuggle.arch>x86_64-w64-mingw32</xuggle.arch>
                 <filename.suffix>win64</filename.suffix>
             </properties>
+        </profile>
+        <profile>
+            <id>exe</id>
+            <!-- Make exe -->
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+                        <artifactId>launch4j-plugin</artifactId>
+                        <version>1.5.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>l4j-gui</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>launch4j</goal>
+                                </goals>
+                                <configuration>
+                                    <headerType>gui</headerType>
+                                    <outfile>target/${artifactId}-${version}-${filename.suffix}.exe</outfile>
+                                    <jar>target/${artifactId}-${version}-${filename.suffix}.jar</jar>
+                                    <errTitle>${artifactId} Error</errTitle>
+                                    <classPath>
+                                        <mainClass>${main.class}</mainClass>
+                                    </classPath>
+                                    <icon>src/main/resources/exeicon.ico</icon>
+                                    <jre>
+                                        <minVersion>1.7.0</minVersion>
+                                        <maxVersion>1.8.0</maxVersion>
+                                        <initialHeapSize>128</initialHeapSize>
+                                        <maxHeapSize>1024</maxHeapSize>
+                                    </jre>
+                                    <versionInfo>
+                                        <fileVersion>${version.numeric}.0.0</fileVersion>
+                                        <txtFileVersion>${version}</txtFileVersion>
+                                        <fileDescription>Livestream Processor</fileDescription>
+                                        <copyright>2013</copyright>
+                                        <productVersion>${version.numeric}.0.0</productVersion>
+                                        <txtProductVersion>${version}</txtProductVersion>
+                                        <productName>${name}</productName>
+                                        <internalName>${artifactId}</internalName>
+                                        <originalFilename>${artifactId}-${version}-${filename.suffix}.exe</originalFilename>
+                                    </versionInfo>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
