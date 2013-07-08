@@ -45,10 +45,10 @@
         <main.class>net.sapium.livestreamprocessor.Main</main.class>
         <lib.directory>lib</lib.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.numeric>0.8</version.numeric>
+        <version.numeric>0.8.3</version.numeric>
     </properties>
 
-    <version>v${version.numeric}</version>
+    <version>v${version.numeric}-beta</version>
 
     <dependencies>
         <dependency>
@@ -316,11 +316,11 @@
                                         <maxHeapSize>1024</maxHeapSize>
                                     </jre>
                                     <versionInfo>
-                                        <fileVersion>${version.numeric}.0.0</fileVersion>
+                                        <fileVersion>${version.numeric}.0</fileVersion>
                                         <txtFileVersion>${version}</txtFileVersion>
                                         <fileDescription>Livestream Processor</fileDescription>
                                         <copyright>2013</copyright>
-                                        <productVersion>${version.numeric}.0.0</productVersion>
+                                        <productVersion>${version.numeric}.0</productVersion>
                                         <txtProductVersion>${version}</txtProductVersion>
                                         <productName>${name}</productName>
                                         <internalName>${artifactId}</internalName>
